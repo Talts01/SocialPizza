@@ -1,0 +1,21 @@
+html {
+  width: 100vw;
+  height: 100vh;
+  font-family: "Nunito", sans-serif;
+}
+
+body {
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Questo definisce la griglia principale della pagina: Testata, Centro, Piede */
+#root {
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 80px 1fr 60px; /* Header, Main, Footer */
+}

@@ -1,0 +1,30 @@
+/* src/components/ContentNav.css */
+nav.content-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    margin: 0;
+    padding: 10px;
+    gap: 10px;
+}
+
+nav.content-nav div.nav-item {
+    margin: 0;
+    background-color: rgba(255, 255, 255, 0.5);
+    padding: 10px 20px;
+    color: #434343;
+    border-radius: 15px;
+    border: 2px solid #cdcf93;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+nav.content-nav div.nav-item:hover {
+    background-color: white;
+}
+
+nav.content-nav div.nav-item.active {
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 2px solid rgba(241, 0, 107, 0.45);
+    color: #f1006b;
+}

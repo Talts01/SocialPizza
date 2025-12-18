@@ -1,0 +1,44 @@
+/* src/App.css */
+
+/* Stile generale per tutto il sito */
+.app-container {
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  background-color: #f4f4f9;
+}
+
+/* La barra di navigazione scura */
+.navbar {
+  padding: 1rem 2rem;
+  background-color: #333;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.navbar h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #ff6347; /* Un colore rosso pomodoro per "Pizza" */
+}
+
+/* I link nella navbar */
+.nav-link {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s;
+}
+
+.nav-link:hover {
+  color: #ff6347;
+}
+
+/* Il contenitore delle pagine */
+.content-area {
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto; /* Centra il contenuto */
+}
