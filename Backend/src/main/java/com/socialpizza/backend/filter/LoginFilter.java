@@ -37,7 +37,7 @@ public class LoginFilter implements Filter {
         // 2. Se l'utente NON è loggato, ma sta chiedendo di fare login/register, passa pure
         // NOTA: Qui adattiamo il percorso al tuo AuthController (/api/auth)
         String pathname = request.getServletPath();
-        if (pathname.startsWith("/api/auth") || pathname.startsWith("/api/resources")) { // Lasciamo pubbliche anche le risorse base se serve
+        if (pathname.startsWith("/api/auth") || pathname.startsWith("/api/resources") || pathname.startsWith("/h2-console") || pathname.startsWith("/api/debug")) { // Lasciamo pubbliche anche le risorse base, h2-console e debug se serve
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }

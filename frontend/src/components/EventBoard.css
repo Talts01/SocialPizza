@@ -43,10 +43,25 @@
 
 /* Griglia delle Card */
 .event-list {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
-    align-items: stretch;
+}
+
+@media (max-width: 768px) {
+    .event-list {
+        grid-template-columns: 1fr;
+    }
+
+    .event-board-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .organize-btn {
+        width: 100%;
+    }
 }
 
 /* Messaggi di stato (Caricamento, Errore, Vuoto) */

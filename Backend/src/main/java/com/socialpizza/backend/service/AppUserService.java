@@ -46,18 +46,52 @@ public class AppUserService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Utente non trovato con ID: " + id));
     }
+
+    // METODO 4: TROVA UTENTE PER EMAIL
+    public AppUser findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElse(null);
+    }
+
     @PostConstruct
     public void init() {
         // Creiamo il Ristoratore (Luigi) se non esiste
         if (userRepository.findByEmail("luigi@pizzeria.it").isEmpty()) {
-            userRepository.save(new AppUser(null, "Luigi", "Rossi", "luigi@pizzeria.it", "password123", "RESTAURATEUR"));
-
+            AppUser luigi = new AppUser();
+            luigi.setName("Luigi");
+            luigi.setSurname("Rossi");
+            luigi.setEmail("luigi@pizzeria.it");
+            luigi.setPassword("password123");
+            luigi.setRole("RESTAURATEUR");
+            luigi.setIsVerified(true); // I ristoratori iniziali sono verificati
+            luigi.setBio("Proprietario della Pizzeria Da Luigi");
+            userRepository.save(luigi);
         }
 
         // Creiamo il Pizza Lover (Mario) se non esiste
         if (userRepository.findByEmail("mario@gmail.com").isEmpty()) {
-            userRepository.save(new AppUser(null, "Mario", "Bianchi", "mario@gmail.com", "12345", "USER"));
+            AppUser mario = new AppUser();
+            mario.setName("Mario");
+            mario.setSurname("Bianchi");
+            mario.setEmail("mario@gmail.com");
+            mario.setPassword("12345");
+            mario.setRole("USER");
+            mario.setIsVerified(false);
+            mario.setBio("Amante di pizza e anime");
+            userRepository.save(mario);
+        }
 
+        // Creiamo l'Admin se non esiste
+        if (userRepository.findByEmail("admin@socialpizza.it").isEmpty()) {
+            AppUser admin = new AppUser();
+            admin.setName("Admin");
+            admin.setSurname("SocialPizza");
+            admin.setEmail("admin@socialpizza.it");
+            admin.setPassword("admin123");
+            admin.setRole("ADMIN");
+            admin.setIsVerified(true);
+            admin.setBio("Amministratore della piattaforma");
+            userRepository.save(admin);
         }
     }
 }

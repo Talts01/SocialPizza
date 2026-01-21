@@ -24,8 +24,15 @@ public class AppUser {
     private String email;
     private String password;
 
-    // Può essere "USER" (Pizza Lover) o "RESTAURATEUR" (Ristoratore)
-    private String role;
+    // Ruolo: "USER" (Pizza Lover) o "RESTAURATEUR" (Ristoratore)
+    private String role; // Default: USER
+
+    // Flag di verifica: importante per i ristoratori (garantisce credibilità)
+    // Nota: Boolean (con B maiuscula) è l'oggetto wrapper, può essere null
+    private Boolean isVerified = false; // Default: false per USER, verificato da admin per RESTAURATEUR
+
+    // Bio/Descrizione personale (per profilo pubblico)
+    private String bio;
 }
 
 //Gli import sono il modo in cui dici a Java: "Ehi, per questo lavoro specifico, vai in magazzino e portami sul banco solo il cacciavite a stella e il martello".

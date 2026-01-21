@@ -47,7 +47,15 @@ public class EventService {
                 System.out.println("Pizzeria Da Luigi creata.");
 
                 // (Opzionale) Creiamo anche un Evento di prova già pronto
-                SocialEvent evento = new SocialEvent(null, "Serata Naruto",  LocalDateTime.now().plusDays(5), 10, "APPROVED", luigi, pizzeria, anime, "serata dedicata agli appasionati di Naruto");
+                SocialEvent evento = new SocialEvent();
+                evento.setTitle("Serata Naruto");
+                evento.setEventDate(LocalDateTime.now().plusDays(5));
+                evento.setMaxParticipants(10);
+                evento.setStatus("APPROVED");
+                evento.setOrganizer(luigi);
+                evento.setRestaurant(pizzeria);
+                evento.setCategory(anime);
+                evento.setDescription("serata dedicata agli appasionati di Naruto");
                 eventRepository.save(evento);
                 System.out.println("Evento 'Serata Naruto' creato.");
             }
@@ -161,6 +169,11 @@ public class EventService {
         return eventRepository.findByStatus("APPROVED");
     }
 
+    // Restituisce eventi pubblici: APPROVED e PENDING (i pending non sono partecipabili)
+    public List<SocialEvent> getApprovedOrPendingEvents() {
+        return eventRepository.findByStatusIn(List.of("APPROVED", "PENDING"));
+    }
+
     public List<SocialEvent> getEventsByRestaurant(Long restaurantId) {
         return eventRepository.findByRestaurantId(restaurantId);
     }
@@ -177,5 +190,123 @@ public class EventService {
     }
     public List<SocialEvent> getEventsCreatedByUser(Long userId) {
         return eventRepository.findByOrganizerId(userId);
+    }
+
+    // 5. MODERATORE DECISION: Approva/Rifiuta con commento
+    public SocialEvent moderatorDecision(Long eventId, Long restaurateurId, String decision, String comment) {
+        SocialEvent event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Evento non trovato"));
+
+        // Verifica che il ristoratore sia il proprietario del locale dove si farà l'evento
+        if (!event.getRestaurant().getOwner().getId().equals(restaurateurId)) {
+            throw new RuntimeException("Non sei il proprietario di questo ristorante!");
+        }
+
+        // Verifica che l'evento sia ancora in sospeso
+        if (!"PENDING".equals(event.getStatus())) {
+            throw new RuntimeException("Questo evento non è in stato PENDING");
+        }
+
+        // Valida la decision
+        if (!("APPROVED".equals(decision) || "REJECTED".equals(decision))) {
+            throw new RuntimeException("Decision deve essere APPROVED o REJECTED");
+        }
+
+        // Aggiorna l'evento
+        event.setStatus(decision);
+        event.setDecisionDate(LocalDateTime.now());
+        event.setModeratorComment(comment);
+
+        SocialEvent savedEvent = eventRepository.save(event);
+
+        // Se approvato, auto-iscrivere l'organizzatore
+        if ("APPROVED".equals(decision)) {
+            try {
+                Participation p = new Participation();
+                p.setUser(event.getOrganizer());
+                p.setEvent(savedEvent);
+                p.setRegistrationDate(LocalDateTime.now());
+                p.setStatus("REGISTERED");
+                participationRepository.save(p);
+                System.out.println("Organizzatore auto-iscritto dopo approvazione");
+            } catch (Exception e) {
+                System.out.println("Organizzatore già iscritto o errore: " + e.getMessage());
+            }
+        }
+
+        return savedEvent;
+    }
+
+    // 6. OTTIENI EVENTI PENDING PER RISTORATORE
+    public List<SocialEvent> getPendingEventsByRestaurateurId(Long restaurateurId) {
+        // Trova tutti i ristoranti del ristoratore
+        List<Restaurant> restaurants = restaurantRepository.findByOwnerId(restaurateurId);
+
+        // Per ogni ristorante, trova gli eventi PENDING
+        return restaurants.stream()
+                .flatMap(restaurant -> eventRepository.findByRestaurantIdAndStatus(restaurant.getId(), "PENDING").stream())
+                .toList();
+    }
+
+    // 7. OTTIENI PARTECIPANTI DI UN EVENTO
+    public List<Participation> getParticipantsByEventId(Long eventId) {
+        return participationRepository.findByEventId(eventId);
+    }
+
+    // 8. CANCELLA ISCRIZIONE
+    public void leaveEvent(Long userId, Long eventId) {
+        // Verifica che l'utente sia iscritto
+        if (!participationRepository.existsByUserIdAndEventId(userId, eventId)) {
+            throw new RuntimeException("Non sei iscritto a questo evento");
+        }
+
+        // Trova la partecipazione e cancellala
+        List<Participation> participations = participationRepository.findByEventId(eventId);
+        Participation toDelete = participations.stream()
+                .filter(p -> p.getUser().getId().equals(userId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Partecipazione non trovata"));
+
+        participationRepository.delete(toDelete);
+    }
+
+    // 9. RITIRA PROPOSTA (solo se PENDING e sei l'organizzatore)
+    public void withdrawEvent(Long eventId, Long userId) {
+        SocialEvent event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Evento non trovato"));
+
+        // Verifica che sia l'organizzatore
+        if (!event.getOrganizer().getId().equals(userId)) {
+            throw new RuntimeException("Solo l'organizzatore può ritirare la proposta");
+        }
+
+        // Verifica che sia PENDING
+        if (!"PENDING".equals(event.getStatus())) {
+            throw new RuntimeException("Puoi ritirare solo eventi in stato PENDING");
+        }
+
+        // Cancella l'evento
+        eventRepository.delete(event);
+    }
+
+    // Verifica se un utente è iscritto a un evento
+    public boolean isUserParticipating(Long userId, Long eventId) {
+        return participationRepository.existsByUserIdAndEventId(userId, eventId);
+    }
+
+    // Elimina evento (solo per admin)
+    @org.springframework.transaction.annotation.Transactional
+    public void deleteEvent(Long eventId) {
+        SocialEvent event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Evento non trovato"));
+        
+        // Elimina prima tutte le partecipazioni associate
+        System.out.println("[DELETE] Rimozione partecipazioni per evento ID=" + eventId);
+        participationRepository.deleteByEventId(eventId);
+        
+        // Poi elimina l'evento
+        System.out.println("[DELETE] Rimozione evento ID=" + eventId);
+        eventRepository.delete(event);
+        System.out.println("[DELETE] Verifica esistenza post-delete: " + eventRepository.existsById(eventId));
     }
 }

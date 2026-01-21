@@ -41,6 +41,23 @@ public class AuthController {
         return ResponseEntity.ok(new SessionData("", "", "Logout effettuato"));
     }
 
+    // Endpoint per verificare se la sessione è ancora attiva
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser(HttpSession session) {
+        String username = (String) session.getAttribute("username");
+        if (username == null) {
+            return ResponseEntity.status(401).body("Non autenticato");
+        }
+        
+        // Recupera l'utente dal database
+        AppUser user = userService.findByEmail(username);
+        if (user == null) {
+            return ResponseEntity.status(401).body("Utente non trovato");
+        }
+        
+        return ResponseEntity.ok(new SessionData(user.getName(), user.getRole(), "Sessione attiva"));
+    }
+
     // Lascia pure la registrazione com'era, quella va bene
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody AppUser user) {

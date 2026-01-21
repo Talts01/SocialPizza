@@ -12,6 +12,7 @@ export const loginUser = async (email: string, password: string) => {
         headers: {
             'Content-Type': 'application/json', // Diciamo al server che stiamo mandando dati JSON
         },
+        credentials: 'include', // ✅ invia il cookie di sessione al backend (persistenza login)
         body: JSON.stringify({ email, password }), // Trasformiamo i dati in stringa JSON
     });
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./Login.css"; 
+import "./Login.css";
 
 // Definiamo cosa "si aspetta" questo componente dal padre
 interface LoginProps {
@@ -17,6 +17,7 @@ export default function Login({ onLogin }: LoginProps) {
             const response = await fetch("http://localhost:8081/api/auth/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
+                credentials: "include",
                 body: JSON.stringify({ email, password }),
                 credentials: "include"
             });
@@ -44,7 +45,8 @@ export default function Login({ onLogin }: LoginProps) {
                     type="text" 
                     placeholder="Email" 
                     value={email} 
-                    onChange={(e) => setEmail(e.target.value)} 
+                    onChange={(e) => setEmail(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
                     style={{ display: "block", margin: "10px 0", padding: 5, width: "100%" }}
                 />
             </div>
@@ -53,7 +55,8 @@ export default function Login({ onLogin }: LoginProps) {
                     type="password" 
                     placeholder="Password" 
                     value={password} 
-                    onChange={(e) => setPassword(e.target.value)} 
+                    onChange={(e) => setPassword(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
                     style={{ display: "block", margin: "10px 0", padding: 5, width: "100%" }}
                 />
             </div>

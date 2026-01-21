@@ -10,12 +10,16 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "event_id"})) // Impedisce duplicate
 public class Participation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private LocalDateTime registrationDate; // Quando si è iscritto
+
+    // Stato partecipazione: "REGISTERED", "CONFIRMED", "ATTENDED", "CANCELLED"
+    private String status; // Default: REGISTERED
 
     @ManyToOne
     @JoinColumn(name = "user_id")

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import "./CreateEventForm.css";
+import toast from 'react-hot-toast';
 import type { Category, Restaurant } from "../types";
+import "./CreateEventForm.css";
 
 interface CreateEventFormProps {
     onConfirm: (title: string, description: string, date: string, seats: number, restaurantId: number, categoryId: number) => void;
@@ -56,7 +57,7 @@ export function CreateEventForm({ onConfirm, onCancel }: CreateEventFormProps) {
 
     const handleSubmit = () => {
         if (!title || !dateOnly || !timeOnly || selectedRest === 0 || selectedCat === 0) {
-            alert("Compila tutti i campi obbligatori!");
+            toast.error("Compila tutti i campi obbligatori!");
             return;
         }
         const finalDateTime = `${dateOnly}T${timeOnly}`;

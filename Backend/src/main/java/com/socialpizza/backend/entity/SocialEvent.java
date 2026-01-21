@@ -40,6 +40,13 @@ public class SocialEvent {
     @Column(name = "description", length = 500) // Diamo un po' di spazio
     private String description;
 
+    // Commento del ristoratore in caso di approvazione/rifiuto
+    @Column(name = "moderator_comment", length = 300)
+    private String moderatorComment;
+
+    // Data di decisione (quando il ristoratore ha approvato/rifiutato)
+    private LocalDateTime decisionDate;
+
     public String getDescription() {
         return description;
     }

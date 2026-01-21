@@ -1,0 +1,93 @@
+.restaurant-dashboard {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.restaurant-dashboard h2 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.restaurant-dashboard h3 {
+    color: #666;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+}
+
+.pending-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.pending-card {
+    background: white;
+    border: 2px solid #ffa500;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.event-info h4 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 1.3rem;
+}
+
+.event-info p {
+    margin: 5px 0;
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.description {
+    font-style: italic;
+    color: #777 !important;
+    margin-top: 10px;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.approve-btn, .reject-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.approve-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.approve-btn:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+}
+
+.reject-btn {
+    background-color: #f44336;
+    color: white;
+}
+
+.reject-btn:hover {
+    background-color: #da190b;
+    transform: scale(1.05);
+}
+
+.empty-message {
+    text-align: center;
+    color: #999;
+    font-size: 1.1rem;
+    margin-top: 40px;
+}

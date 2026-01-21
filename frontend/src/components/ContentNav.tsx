@@ -1,43 +1,30 @@
 import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import "./ContentNav.css";
 
-// 1. Modifica il TIPO (togli 'crea-evento', aggiungi 'richieste')
-export type ContentNavItem = "eventi" | "richieste" | "dashboard" | "amici"; 
-
-interface ContentNavProps {
-    onNav: (target: ContentNavItem) => void;
-}
-
-export function ContentNav({ onNav }: ContentNavProps) {
-    const [activeItem, setActiveItem] = useState<ContentNavItem>("eventi");
-
-    function handleNav(target: ContentNavItem) {
-        setActiveItem(target);
-        onNav(target);
-    }
-
-    const getClass = (target: ContentNavItem) => 
-        target === activeItem ? "nav-item active" : "nav-item";
+export function ContentNav() {
+    const location = useLocation();
+    
+    const getClass = (path: string) => 
+        location.pathname === path ? "nav-item active" : "nav-item";
 
     return (
         <nav className="content-nav">
-            <div className={getClass("eventi")} onClick={() => handleNav("eventi")}>
+            <Link to="/eventi" className={getClass("/eventi")}>
                 📅 Bacheca Eventi
-            </div>
+            </Link>
             
-            {/* 2. Nuova Voce RICHIESTE */}
-            <div className={getClass("dashboard")} onClick={() => handleNav("dashboard")}>
-                📊 Iscrizioni
-            </div>
-            <div className={getClass("richieste")} onClick={() => handleNav("richieste")}>
-                📨 Le mie Richieste
-            </div>
-
+            <Link to="/dashboard" className={getClass("/dashboard")}>
+                📊 Dashboard
+            </Link>
             
+            <Link to="/richieste" className={getClass("/richieste")}>
+                📨 I Miei Eventi
+            </Link>
 
-            <div className={getClass("amici")} onClick={() => handleNav("amici")}>
+            <Link to="/amici" className={getClass("/amici")}>
                 👥 Amici
-            </div>
+            </Link>
         </nav>
     );
 }

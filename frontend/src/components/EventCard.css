@@ -1,10 +1,12 @@
 .event-card {
-    background-color: white;
-    border: 2px solid #cdcf93;
+    background-color: var(--bg-secondary, white);
+    border: 2px solid var(--border, #cdcf93);
     border-radius: 15px;
     padding: 15px;
-    width: 250px;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 350px;
+    min-width: 250px;
+    box-shadow: 2px 2px 5px var(--shadow, rgba(0,0,0,0.1));
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -13,28 +15,30 @@
 
 .event-card:hover {
     transform: scale(1.02);
-    border-color: #f1006b;
+    border-color: var(--accent, #f1006b);
 }
 
 .event-header {
     font-weight: bold;
     font-size: 1.1rem;
-    color: #f1006b;
+    color: var(--accent, #f1006b);
     margin-bottom: 5px;
 }
 
 .event-info {
     font-size: 0.9rem;
-    color: #555;
+    color: var(--text-secondary, #555);
     margin-bottom: 10px;
 }
 
 .event-footer {
     font-size: 0.8rem;
     display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--border, #eee);
     padding-top: 10px;
 }
 
@@ -44,4 +48,21 @@
     border-radius: 10px;
     font-size: 0.75rem;
     font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .event-card {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .event-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .join-btn {
+        width: 100%;
+        margin-top: 8px;
+    }
 }

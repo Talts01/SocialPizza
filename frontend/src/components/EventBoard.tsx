@@ -1,18 +1,21 @@
 import { useEffect, useState } from "react";
+import toast from 'react-hot-toast';
 import type { SocialEvent } from "../types";
-import { EventCard } from "./EventCard";
 import { CreateEventForm } from "./CreateEventForm";
-import "./EventBoard.css"; // <--- IMPORTA IL CSS QUI
+import "./EventBoard.css";
+import { EventCard } from "./EventCard";
+import { EventFilters, type FilterState } from "./EventFilters";
 
 export function EventBoard() {
     const [events, setEvents] = useState<SocialEvent[]>([]);
+    const [filteredEvents, setFilteredEvents] = useState<SocialEvent[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [showCreateForm, setShowCreateForm] = useState(false);
 
     const fetchEvents = async () => {
         try {
-            const response = await fetch("http://localhost:8081/api/events/approved", {
+            const response = await fetch("http://localhost:8081/api/events/public", {
                 method: "GET",
                 credentials: "include"
             });
@@ -20,6 +23,7 @@ export function EventBoard() {
             if (response.ok) {
                 const data = await response.json();
                 setEvents(data);
+                setFilteredEvents(data);
             } else {
                 setError("Errore nel caricamento eventi");
             }
@@ -34,31 +38,92 @@ export function EventBoard() {
         fetchEvents();
     }, []);
 
+    const handleFilter = (filters: FilterState) => {
+        let filtered = [...events];
+
+        // Filtro per testo (cerca in titolo, descrizione, nome ristorante)
+        if (filters.searchText) {
+            const search = filters.searchText.toLowerCase();
+            filtered = filtered.filter(evt => 
+                evt.title.toLowerCase().includes(search) ||
+                (evt.description && evt.description.toLowerCase().includes(search)) ||
+                evt.restaurant.name.toLowerCase().includes(search)
+            );
+        }
+
+        // Filtro per categoria
+        if (filters.category > 0) {
+            filtered = filtered.filter(evt => evt.category.id === filters.category);
+        }
+
+        // Filtro per città
+        if (filters.city > 0) {
+            filtered = filtered.filter(evt => evt.restaurant.city?.id === filters.city);
+        }
+
+        // Filtro per data da
+        if (filters.dateFrom) {
+            const fromDate = new Date(filters.dateFrom);
+            filtered = filtered.filter(evt => new Date(evt.eventDate) >= fromDate);
+        }
+
+        // Filtro per data a
+        if (filters.dateTo) {
+            const toDate = new Date(filters.dateTo);
+            toDate.setHours(23, 59, 59); // Fine giornata
+            filtered = filtered.filter(evt => new Date(evt.eventDate) <= toDate);
+        }
+
+        setFilteredEvents(filtered);
+    };
+
     const handleJoin = async (eventId: number) => {
+        console.log("🔘 Click partecipa su evento ID:", eventId);
+        
         try {
             const response = await fetch(`http://localhost:8081/api/events/${eventId}/join`, {
                 method: "POST",
                 credentials: "include"
             });
 
+            console.log("📡 Risposta server:", response.status, response.statusText);
+
             if (response.ok) {
-                alert("Iscrizione avvenuta con successo! 🎉");
+                toast.success("Iscrizione avvenuta con successo! 🎉");
                 fetchEvents();
             } else {
                 const errorMsg = await response.text();
-                try {
-                    const jsonErr = JSON.parse(errorMsg);
-                    alert("Attenzione: " + (jsonErr.message || "Errore sconosciuto"));
-                } catch {
-                    alert("Attenzione: " + errorMsg);
-                }
+                console.error("❌ Errore:", errorMsg);
+                toast.error(errorMsg || "Errore durante l'iscrizione");
             }
         } catch (error) {
             console.error(error);
-            alert("Errore di connessione col server");
+            toast.error("Errore di connessione col server");
         }
     };
+    const handleDelete = async (eventId: number) => {
+        try {
+            const response = await fetch(`http://localhost:8081/api/events/${eventId}`, {
+                method: "DELETE",
+                credentials: "include"
+            });
 
+            console.log("🗑️ DELETE /api/events/" + eventId, response.status, response.statusText);
+            if (response.ok) {
+                toast.success("Evento eliminato con successo!");
+                // Aggiornamento ottimistico della UI
+                setEvents(prev => prev.filter(e => e.id !== eventId));
+                setFilteredEvents(prev => prev.filter(e => e.id !== eventId));
+            } else {
+                const errorMsg = await response.text();
+                console.error("❌ Delete failed:", response.status, errorMsg);
+                toast.error(errorMsg || "Errore durante l'eliminazione");
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Errore di connessione col server");
+        }
+    };
     const handleCreateEvent = async (title: string, description: string, date: string, seats: number, restaurantId: number, categoryId: number) => {
         setShowCreateForm(false);
         
@@ -83,18 +148,19 @@ export function EventBoard() {
                 const createdEvent = await response.json();
 
                 if (createdEvent.status === "APPROVED") {
-                    alert("Evento creato e pubblicato con successo! 🍕");
-                    fetchEvents(); 
+                    toast.success("Evento creato e pubblicato con successo! 🍕");
                 } else {
-                    alert("Evento creato! È in attesa di approvazione da parte del ristoratore. ⏳");
+                    toast.success("Evento creato! È in attesa di approvazione ⏳");
                 }
+
+                fetchEvents();
             } else {
                 const errMsg = await response.text();
-                alert("Errore creazione: " + errMsg);
+                toast.error("Errore creazione: " + errMsg);
             }
         } catch (error) {
             console.error(error);
-            alert("Errore di connessione");
+            toast.error("Errore di connessione");
         }
     };
 
@@ -113,16 +179,18 @@ export function EventBoard() {
                     + Organizza Pizzata
                 </button>
             </div>
+
+            <EventFilters onFilter={handleFilter} />
             
-            {events.length === 0 ? (
+            {filteredEvents.length === 0 ? (
                 <div className="empty-message">
-                    <p>Nessun evento in programma al momento.</p>
-                    <p>Sii il primo a proporne uno!</p>
+                    <p>Nessun evento trovato.</p>
+                    <p>{events.length === 0 ? "Sii il primo a proporne uno!" : "Prova a modificare i filtri."}</p>
                 </div>
             ) : (
                 <div className="event-list">
-                    {events.map(evt => (
-                        <EventCard key={evt.id} event={evt} onJoin={handleJoin} />
+                    {filteredEvents.map(evt => (
+                        <EventCard key={evt.id} event={evt} onJoin={handleJoin} onDelete={handleDelete} />
                     ))}
                 </div>
             )}
