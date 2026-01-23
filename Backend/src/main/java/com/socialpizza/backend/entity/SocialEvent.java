@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Data // Genera automaticamente Getters e Setters
 @NoArgsConstructor
 @AllArgsConstructor
 public class SocialEvent {
@@ -16,43 +16,37 @@ public class SocialEvent {
     private Long id;
 
     private String title;
-    private LocalDateTime eventDate; // Data e ora dell'evento
-    private int maxParticipants; // Es. Tavolo da 10 persone
+    private LocalDateTime eventDate;
+    private int maxParticipants;
 
     // Stato evento: "PENDING", "APPROVED", "REJECTED"
     private String status;
 
-    // CHI l'ha creato?
     @ManyToOne
     @JoinColumn(name = "organizer_id")
     private AppUser organizer;
 
-    // DOVE si fa?
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
-    // CHE TEMA ha?
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @Column(name = "description", length = 500) // Diamo un po' di spazio
+    @Column(name = "description", length = 500)
     private String description;
 
-    // Commento del ristoratore in caso di approvazione/rifiuto
+    // --- CAMPI PER LA MODERAZIONE ---
+
+    // 1. Commento se APPROVATO (Opzionale)
     @Column(name = "moderator_comment", length = 300)
     private String moderatorComment;
 
-    // Data di decisione (quando il ristoratore ha approvato/rifiutato)
+    // 2. Motivazione se RIFIUTATO (Obbligatoria)
+    @Column(length = 1000)
+    private String rejectionReason;
+
+    // Data di decisione
     private LocalDateTime decisionDate;
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
 }

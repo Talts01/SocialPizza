@@ -1,37 +1,36 @@
 import { createContext, useEffect, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import './App.css';
 import { ContentNav } from './components/ContentNav';
-import { Dashboard } from './components/Dashboard';
 import { EventBoard } from './components/EventBoard';
-import { EventDetail } from './components/EventDetail';
 import { Header } from './components/Header';
 import Login from './components/Login';
 import { MyRequests } from './components/MyRequests';
+import { OrganizeEvent } from './components/OrganizeEvent'; // IMPORTA IL NUOVO FILE
 import { RestaurantDashboard } from './components/RestaurantDashboard';
 
-// 1. Definiamo il tipo Utente
 export interface User {
     username: string;
     role: string;
 }
 
-// 2. Creiamo il Contesto Utente
+// 1. AGGIUNTO "organizza" AI TIPI DI PAGINA
+export type PageType = "eventi" | "richieste" | "dashboard" | "organizza";
+
 export const UserContext = createContext<User | null>(null);
 
 function App() {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
-
-    // Verifica se l'utente ha una sessione attiva all'avvio
+    
+    const [currentPage, setCurrentPage] = useState<PageType>("eventi");
+    
     useEffect(() => {
         const checkSession = async () => {
             try {
                 const response = await fetch("http://localhost:8081/api/auth/me", {
                     credentials: "include"
                 });
-                
                 if (response.ok) {
                     const sessionData = await response.json();
                     setUser({ username: sessionData.username, role: sessionData.role });
@@ -42,7 +41,6 @@ function App() {
                 setLoading(false);
             }
         };
-
         checkSession();
     }, []);
 
@@ -53,50 +51,72 @@ function App() {
             console.error("Errore logout", error);
         }
         setUser(null);
+        setCurrentPage("eventi");
     };
 
-    // Mostra un loader mentre verifichiamo la sessione
+    const handleNavigate = (page: PageType) => {
+        setCurrentPage(page);
+    };
+
     if (loading) {
         return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
             <p>Caricamento...</p>
         </div>;
     }
 
+    let mainContent;
+    switch (currentPage) {
+        case "eventi":
+            mainContent = <EventBoard />;
+            break;
+            
+        case "richieste":
+            mainContent = <MyRequests defaultTab="joined" />;
+            break;
+            
+        case "dashboard":
+            mainContent = user?.role === "RESTAURATEUR" 
+                ? <RestaurantDashboard /> 
+                : <MyRequests defaultTab="created" />;
+            break;
+
+        // 2. NUOVO CASO PER LA PAGINA ORGANIZZA
+        case "organizza":
+            // Passiamo handleNavigate così dopo aver creato l'evento può reindirizzarci
+            mainContent = <OrganizeEvent onNavigate={handleNavigate} />;
+            break;
+            
+        default:
+            mainContent = <EventBoard />;
+    }
+
     return (
-        <BrowserRouter>
-            <UserContext.Provider value={user}>
-                <Toaster position="top-right" />
-                <Header onLogout={handleLogout} />
+        <UserContext.Provider value={user}>
+            <Toaster position="top-right" />
+            <Header onLogout={handleLogout} />
 
-                {user ? (
-                    <section className="main">
-                        <div className="left-col">
-                            <ContentNav />
-                        </div>
-                        
-                        <div className="center-area">
-                            <Routes>
-                                <Route path="/" element={<Navigate to="/eventi" replace />} />
-                                <Route path="/eventi" element={<EventBoard />} />
-                                <Route path="/eventi/:id" element={<EventDetail />} />
-                                <Route path="/richieste" element={<MyRequests />} />
-                                <Route path="/dashboard" element={user.role === "RESTAURATEUR" ? <RestaurantDashboard /> : <Dashboard />} />
-                                <Route path="/amici" element={<h2>Qui vedrai la lista amici</h2>} />
-                                <Route path="*" element={<Navigate to="/eventi" replace />} />
-                            </Routes>
-                        </div>
-                    </section>
-                ) : (
-                    <Routes>
-                        <Route path="*" element={<section className="login"><Login onLogin={(userData) => setUser(userData)} /></section>} />
-                    </Routes>
-                )}
+            {user ? (
+                <section className="main">
+                    <div className="left-col">
+                        <ContentNav 
+                            activePage={currentPage} 
+                            onNavigate={handleNavigate} 
+                        />
+                    </div>
+                    <div className="center-area">
+                        {mainContent}
+                    </div>
+                </section>
+            ) : (
+                <section className="login">
+                    <Login onLogin={(userData: any) => setUser(userData)} />
+                </section>
+            )}
 
-                <footer style={{ backgroundColor: "#eee", padding: "10px", gridRow: "3 / 4", textAlign: "center", fontSize: "0.8rem" }}>
-                    &copy; 2025 SocialPizza - Progetto Universitario
-                </footer>
-            </UserContext.Provider>
-        </BrowserRouter>
+            <footer style={{ backgroundColor: "#eee", padding: "10px", gridRow: "3 / 4", textAlign: "center", fontSize: "0.8rem" }}>
+                &copy; 2025 SocialPizza - Progetto Universitario
+            </footer>
+        </UserContext.Provider>
     );
 }
 

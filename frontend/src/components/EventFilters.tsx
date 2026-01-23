@@ -1,111 +1,107 @@
 import { useEffect, useState } from "react";
-import type { Category, City } from "../types";
 import "./EventFilters.css";
+
+export interface FilterState {
+    searchText: string;
+    city: number;
+    category: number;
+    dateFrom: string;
+}
 
 interface EventFiltersProps {
     onFilter: (filters: FilterState) => void;
 }
 
-export interface FilterState {
-    category: number;
-    city: number;
-    dateFrom: string;
-    dateTo: string;
-    searchText: string;
-}
-
 export function EventFilters({ onFilter }: EventFiltersProps) {
-    const [categories, setCategories] = useState<Category[]>([]);
-    const [cities, setCities] = useState<City[]>([]);
-    const [filters, setFilters] = useState<FilterState>({
-        category: 0,
-        city: 0,
-        dateFrom: "",
-        dateTo: "",
-        searchText: ""
-    });
+    const [searchText, setSearchText] = useState("");
+    const [selectedCity, setSelectedCity] = useState(0);
+    const [selectedCategory, setSelectedCategory] = useState(0);
+    const [dateFrom, setDateFrom] = useState("");
+
+    const [cities, setCities] = useState<{id: number, name: string}[]>([]);
+    const [categories, setCategories] = useState<{id: number, name: string}[]>([]);
+
+    const todayStr = new Date().toISOString().split("T")[0];
 
     useEffect(() => {
-        fetch("http://localhost:8081/api/resources/categories")
-            .then(res => res.json())
-            .then(setCategories)
-            .catch(console.error);
-
         fetch("http://localhost:8081/api/resources/cities")
-            .then(res => res.json())
-            .then(setCities)
-            .catch(console.error);
+            .then(res => res.ok ? res.json() : [])
+            .then(data => setCities(data))
+            .catch(() => {}); 
+
+        fetch("http://localhost:8081/api/resources/categories")
+            .then(res => res.ok ? res.json() : [])
+            .then(data => setCategories(data))
+            .catch(() => {});
     }, []);
 
-    const handleFilterChange = (key: keyof FilterState, value: any) => {
-        const newFilters = { ...filters, [key]: value };
-        setFilters(newFilters);
-        onFilter(newFilters);
-    };
+    useEffect(() => {
+        onFilter({
+            searchText,
+            city: selectedCity,
+            category: selectedCategory,
+            dateFrom
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchText, selectedCity, selectedCategory, dateFrom]);
 
-    const resetFilters = () => {
-        const emptyFilters: FilterState = {
-            category: 0,
-            city: 0,
-            dateFrom: "",
-            dateTo: "",
-            searchText: ""
-        };
-        setFilters(emptyFilters);
-        onFilter(emptyFilters);
+    // Funzione per pulire la data
+    const handleClearDate = () => {
+        setDateFrom("");
     };
 
     return (
-        <div className="event-filters">
-            <input
-                type="text"
-                placeholder="🔍 Cerca evento..."
-                value={filters.searchText}
-                onChange={(e) => handleFilterChange("searchText", e.target.value)}
-                className="filter-search"
+        <div className="filters-container">
+            {/* Ricerca Testuale */}
+            <input 
+                type="text" 
+                placeholder="🔍 Cerca evento o pizzeria..." 
+                className="filter-input"
+                value={searchText}
+                onChange={e => setSearchText(e.target.value)}
             />
 
-            <select
-                value={filters.category}
-                onChange={(e) => handleFilterChange("category", Number(e.target.value))}
+            {/* Città */}
+            <select 
                 className="filter-select"
+                value={selectedCity}
+                onChange={e => setSelectedCity(parseInt(e.target.value))}
             >
-                <option value={0}>📂 Tutte le categorie</option>
-                {categories.map(c => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
+                <option value={0}>📍 Tutte le Città</option>
+                {cities.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
 
-            <select
-                value={filters.city}
-                onChange={(e) => handleFilterChange("city", Number(e.target.value))}
+            {/* Categoria */}
+            <select 
                 className="filter-select"
+                value={selectedCategory}
+                onChange={e => setSelectedCategory(parseInt(e.target.value))}
             >
-                <option value={0}>📍 Tutte le città</option>
-                {cities.map(c => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
+                <option value={0}>🎨 Tutte le Categorie</option>
+                {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
 
-            <input
-                type="date"
-                value={filters.dateFrom}
-                onChange={(e) => handleFilterChange("dateFrom", e.target.value)}
-                placeholder="Da"
-                className="filter-date"
-            />
-
-            <input
-                type="date"
-                value={filters.dateTo}
-                onChange={(e) => handleFilterChange("dateTo", e.target.value)}
-                placeholder="A"
-                className="filter-date"
-            />
-
-            <button onClick={resetFilters} className="filter-reset">
-                🔄 Reset
-            </button>
+            {/* GRUPPO DATA CON LA X */}
+            <div className="date-filter-group">
+                <input 
+                    type="date" 
+                    className="filter-date"
+                    value={dateFrom}
+                    min={todayStr}
+                    onChange={e => setDateFrom(e.target.value)}
+                />
+                
+                {/* Mostra la X rossa solo se c'è una data selezionata */}
+                {dateFrom && (
+                    <button 
+                        className="clear-date-btn" 
+                        onClick={handleClearDate}
+                        title="Cancella data"
+                    >
+                        ❌
+                    </button>
+                )}
+            </div>
         </div>
     );
 }

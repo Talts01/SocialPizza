@@ -25,6 +25,7 @@ nav.user-nav {
     justify-content: end;
     align-items: center;
     column-gap: 10px;
+    padding-right: 10px;
 }
 
 nav.user-nav .nav-item {

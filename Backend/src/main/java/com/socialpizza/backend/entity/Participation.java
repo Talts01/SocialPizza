@@ -10,16 +10,15 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "event_id"})) // Impedisce duplicate
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "event_id"})) // Impedisce che lo stesso utente si iscriva 2 volte allo stesso evento
 public class Participation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDateTime registrationDate; // Quando si è iscritto
+    private LocalDateTime registrationDate; // Data e ora di iscrizione
 
-    // Stato partecipazione: "REGISTERED", "CONFIRMED", "ATTENDED", "CANCELLED"
-    private String status; // Default: REGISTERED
+    // Abbiamo rimosso 'status': se il record esiste, l'utente partecipa.
 
     @ManyToOne
     @JoinColumn(name = "user_id")

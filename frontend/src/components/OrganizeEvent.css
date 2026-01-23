@@ -1,0 +1,97 @@
+.organize-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+.organize-header {
+    margin-bottom: 30px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 15px;
+}
+
+.organize-header h2 {
+    color: #e65100;
+    margin: 0 0 10px 0;
+    font-size: 1.8rem;
+}
+
+.organize-header p {
+    color: #666;
+    margin: 0;
+}
+
+/* Stile del Form "piatto" sulla pagina */
+.organize-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.form-group.half {
+    flex: 1;
+}
+
+/* Stile Input e Select */
+.organize-form label {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.95rem;
+}
+
+.organize-form input,
+.organize-form select,
+.organize-form textarea {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: #fafafa;
+    transition: border-color 0.2s, background-color 0.2s;
+}
+
+.organize-form input:focus,
+.organize-form select:focus,
+.organize-form textarea:focus {
+    outline: none;
+    border-color: #ff9800;
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
+}
+
+/* Pulsante Pubblica */
+.form-actions {
+    display: flex;
+    justify-content: center;
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(245, 124, 0, 0.3);
+
+    min-width: 60px
+}
+
+
+.submit-btn:hover {
+    box-shadow: 0 6px 15px rgba(245, 124, 0, 0.4);
+}
+

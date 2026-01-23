@@ -89,3 +89,55 @@
     border-radius: 10px;
     border: 2px dashed #cdcf93;
 }
+
+.filters-container {
+    background-color: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    display: flex;
+    flex-wrap: wrap; /* Va a capo su schermi piccoli */
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 20px;
+    border: 1px solid #eee;
+}
+
+/* Stile comune per tutti gli input */
+.filter-input,
+.filter-select,
+.filter-date {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.filter-input:focus,
+.filter-select:focus,
+.filter-date:focus {
+    border-color: #ff9800;
+    box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
+}
+
+/* Larghezze specifiche */
+.filter-input {
+    flex: 2; /* La barra di ricerca occupa più spazio */
+    min-width: 200px;
+}
+
+.filter-select {
+    flex: 1;
+    min-width: 150px;
+    background-color: white;
+    cursor: pointer;
+}
+
+.filter-date {
+    flex: 1;
+    min-width: 130px;
+    cursor: pointer;
+    color: #555;
+}

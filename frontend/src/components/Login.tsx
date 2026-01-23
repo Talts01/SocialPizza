@@ -1,9 +1,8 @@
 import { useState } from "react";
 import "./Login.css";
 
-// Definiamo cosa "si aspetta" questo componente dal padre
 interface LoginProps {
-    onLogin: (user: any) => void; // Funzione che riceve i dati dell'utente
+    onLogin: (user: any) => void;
 }
 
 export default function Login({ onLogin }: LoginProps) {
@@ -12,57 +11,62 @@ export default function Login({ onLogin }: LoginProps) {
     const [error, setError] = useState("");
 
     const handleSubmit = async () => {
+        // Reset errore precedente
+        setError("");
+        
         try {
-            // Chiamata al NOSTRO backend (porta 8081)
             const response = await fetch("http://localhost:8081/api/auth/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                credentials: "include",
+                credentials: "include", // Una sola volta!
                 body: JSON.stringify({ email, password }),
-                credentials: "include"
             });
 
             if (response.ok) {
                 const data = await response.json();
-                // Invece di navigare, chiamiamo la funzione passata dal padre
                 onLogin(data); 
             } else {
-                setError("Credenziali non valide");
+                setError("Credenziali non valide ❌");
             }
         } catch (err) {
-            setError("Errore di connessione col server");
+            setError("Impossibile connettersi al server ⚠️");
         }
-        
-            
     };
 
     return (
-        <div className="login-form" style={{ padding: 20, border: "2px solid teal", borderRadius: 10, backgroundColor: "white" }}>
-            <h1>SocialPizza Login</h1>
-            {error && <p style={{color: "red"}}>{error}</p>}
-            <div>
-                <input 
-                    type="text" 
-                    placeholder="Email" 
-                    value={email} 
-                    onChange={(e) => setEmail(e.target.value)}
-                    onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
-                    style={{ display: "block", margin: "10px 0", padding: 5, width: "100%" }}
-                />
+        <div className="login-container">
+            <div className="login-card">
+                <h1>🍕 SocialPizza</h1>
+                <p className="subtitle">Accedi per organizzare o partecipare!</p>
+                
+                {error && <div className="error-msg">{error}</div>}
+                
+                <div className="input-group">
+                    <input 
+                        type="text" 
+                        className="login-input"
+                        placeholder="Email (es. mario@gmail.com)" 
+                        value={email} 
+                        onChange={(e) => setEmail(e.target.value)}
+                        onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
+                    />
+                </div>
+                
+                <div className="input-group">
+                    <input 
+                        type="password" 
+                        className="login-input"
+                        placeholder="Password" 
+                        value={password} 
+                        onChange={(e) => setPassword(e.target.value)}
+                        onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
+                    />
+                </div>
+                
+                <button className="login-btn" onClick={handleSubmit}>
+                    Accedi
+                </button>
             </div>
-            <div>
-                <input 
-                    type="password" 
-                    placeholder="Password" 
-                    value={password} 
-                    onChange={(e) => setPassword(e.target.value)}
-                    onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
-                    style={{ display: "block", margin: "10px 0", padding: 5, width: "100%" }}
-                />
-            </div>
-            <button onClick={handleSubmit} style={{ padding: "5px 15px", backgroundColor: "#fdffb9", border: "1px solid #ccc", cursor: "pointer" }}>
-                Accedi
-            </button>
         </div>
     );
 }

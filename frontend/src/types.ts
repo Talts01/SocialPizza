@@ -1,36 +1,38 @@
 // src/types.ts
 
-// L'utente che organizza (semplificato)
+// 1. Definiamo ed ESPORTIAMO "City" così gli altri file la trovano
+export interface City {
+    id: number;
+    name: string;
+}
+
 export interface UserInfo {
     id: number;
     name: string; 
     email: string;
 }
 
-// La categoria (Tema)
 export interface Category {
     id: number;
     name: string;
     description: string;
 }
 
-// Il ristorante
 export interface Restaurant {
     id: number;
     name: string;
     address: string;
-    city: {
-        name: string;
-    }
+    city?: City; 
 }
 
-// L'EVENTO PRINCIPALE (La Pizzata)
 export interface SocialEvent {
     id: number;
     title: string;
     description?: string;
     eventDate: string; 
     maxParticipants: number;
+    rejectionReason?: string;
+    moderatorComment?: string;
     status: "PENDING" | "APPROVED" | "REJECTED";
     category: Category;
     restaurant: Restaurant;

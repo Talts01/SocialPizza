@@ -1,30 +1,50 @@
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
 import "./ContentNav.css";
+import type { PageType } from "../App";
 
-export function ContentNav() {
-    const location = useLocation();
+interface ContentNavProps {
+    activePage: PageType;
+    onNavigate: (page: PageType) => void;
+}
+
+export function ContentNav({ activePage, onNavigate }: ContentNavProps) {
     
-    const getClass = (path: string) => 
-        location.pathname === path ? "nav-item active" : "nav-item";
+    const getClass = (pageName: PageType) => 
+        activePage === pageName ? "nav-item level-1 active" : "nav-item level-1";
 
     return (
         <nav className="content-nav">
-            <Link to="/eventi" className={getClass("/eventi")}>
+            <div 
+                className={getClass("eventi")} 
+                onClick={() => onNavigate("eventi")}
+                style={{cursor: "pointer"}}
+            >
                 📅 Bacheca Eventi
-            </Link>
-            
-            <Link to="/dashboard" className={getClass("/dashboard")}>
-                📊 Dashboard
-            </Link>
-            
-            <Link to="/richieste" className={getClass("/richieste")}>
-                📨 I Miei Eventi
-            </Link>
+            </div>
 
-            <Link to="/amici" className={getClass("/amici")}>
-                👥 Amici
-            </Link>
+            <div 
+                className={getClass("richieste")} 
+                onClick={() => onNavigate("richieste")}
+                style={{cursor: "pointer"}}
+            >
+                🎟 I Miei Eventi
+            </div>
+            
+            <div 
+                className={getClass("dashboard")} 
+                onClick={() => onNavigate("dashboard")}
+                style={{cursor: "pointer"}}
+            >
+                📋 Stato Eventi
+            </div>
+            
+            
+            <div 
+                className={getClass("organizza")} 
+                onClick={() => onNavigate("organizza")}
+                style={{cursor: "pointer", fontWeight: "bold", color: "#e65100"}}
+            >
+                🍕 Organizza Pizzata
+            </div>
         </nav>
     );
 }

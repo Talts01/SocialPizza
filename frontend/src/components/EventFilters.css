@@ -1,66 +1,82 @@
-.event-filters {
-    display: flex;
-    gap: 10px;
+.filters-container {
+    background-color: white;
     padding: 15px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    display: flex;
     flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 20px;
+    border: 1px solid #eee;
 }
 
-.filter-search {
+/* Input Styles */
+.filter-input,
+.filter-select {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.filter-input {
     flex: 2;
     min-width: 200px;
-    padding: 10px 15px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 14px;
-}
-
-.filter-search:focus {
-    outline: none;
-    border-color: #ff6347;
 }
 
 .filter-select {
     flex: 1;
     min-width: 150px;
-    padding: 10px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 14px;
-    background: white;
+    background-color: white;
     cursor: pointer;
 }
 
-.filter-select:focus {
-    outline: none;
-    border-color: #ff6347;
+/* --- NUOVO STILE PER IL GRUPPO DATA --- */
+.date-filter-group {
+    display: flex;
+    align-items: center;
+    position: relative; /* Per gestire posizionamenti */
+    flex: 1;
+    min-width: 160px;
+    background-color: white; /* Uniformità */
 }
 
+/* L'input data deve riempire il gruppo */
 .filter-date {
-    padding: 10px;
-    border: 2px solid #e0e0e0;
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
     border-radius: 8px;
-    font-size: 14px;
-}
-
-.filter-date:focus {
+    font-size: 0.95rem;
     outline: none;
-    border-color: #ff6347;
+    cursor: pointer;
+    color: #555;
 }
 
-.filter-reset {
-    padding: 10px 20px;
-    background: #f44336;
-    color: white;
+/* Stile della X Rossa */
+.clear-date-btn {
+    
+    background: transparent;
     border: none;
-    border-radius: 8px;
+    color: #d32f2f; /* Rosso scuro */
+    font-size: 1rem;
     cursor: pointer;
+    z-index: 10;
+    padding: 5px;
     font-weight: bold;
 }
 
-.filter-reset:hover {
-    background: #d32f2f;
+.clear-date-btn:hover {
+    color: #ff0000; /* Rosso acceso all'hover */
+    transform: scale(1.1);
+}
+
+.filter-input:focus,
+.filter-select:focus,
+.filter-date:focus {
+    border-color: #ff9800;
+    box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
 }
