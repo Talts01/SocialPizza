@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import './App.css';
+import { AdminDashboard } from './components/AdminDashboard';
 import { ContentNav } from './components/ContentNav';
 import { EventBoard } from './components/EventBoard';
 import { Header } from './components/Header';
@@ -15,7 +16,7 @@ export interface User {
 }
 
 // 1. AGGIUNTO "organizza" AI TIPI DI PAGINA
-export type PageType = "eventi" | "richieste" | "dashboard" | "organizza";
+export type PageType = "eventi" | "richieste" | "dashboard" | "organizza" | "admin";
 
 export const UserContext = createContext<User | null>(null);
 
@@ -78,6 +79,12 @@ function App() {
             mainContent = user?.role === "RESTAURATEUR" 
                 ? <RestaurantDashboard /> 
                 : <MyRequests defaultTab="created" />;
+            break;
+
+        case "admin":
+            mainContent = user?.role === "ADMIN"
+                ? <AdminDashboard />
+                : <EventBoard />;
             break;
 
         // 2. NUOVO CASO PER LA PAGINA ORGANIZZA

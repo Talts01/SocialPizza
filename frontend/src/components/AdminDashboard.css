@@ -1,0 +1,128 @@
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 16px;
+}
+
+.admin-card {
+    background: #ffffff;
+    border: 2px solid #f1f1f1;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+}
+
+.admin-card header h3 {
+    margin: 0;
+    color: #f1006b;
+}
+
+.admin-card header p {
+    margin: 4px 0 12px;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    border: 1px solid #ececec;
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: #fafafa;
+}
+
+.row-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.form input,
+.form textarea,
+.form select,
+.row select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #d9d9d9;
+    border-radius: 8px;
+    font-size: 0.95rem;
+}
+
+.field-label {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    color: #444;
+}
+
+.field-label input {
+    flex: 1;
+}
+
+.form textarea {
+    min-height: 60px;
+}
+
+.form button,
+.row button {
+    padding: 8px 12px;
+    background: #f1006b;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.form button:hover,
+.row button:hover {
+    background: #d9005f;
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.95rem;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.muted {
+    color: #777;
+    font-size: 0.9rem;
+}
+
+.pill {
+    padding: 4px 8px;
+    background: #e9f7ef;
+    color: #2c8a4b;
+    border-radius: 999px;
+    font-size: 0.8rem;
+}
+
+.error {
+    border-color: #ffb3b3;
+    color: #c62828;
+}

@@ -43,7 +43,15 @@ export function OrganizeEvent({ onNavigate }: OrganizeEventProps) {
 
                 if (restRes.ok && catRes.ok) {
                     setRestaurants(await restRes.json());
-                    setCategories(await catRes.json());
+                    const catData = await catRes.json();
+                    const sortedCats = [...catData].sort((a: SelectOption, b: SelectOption) => {
+                        const isAAltro = a.name?.toLowerCase() === "altro";
+                        const isBAltro = b.name?.toLowerCase() === "altro";
+                        if (isAAltro && !isBAltro) return 1;
+                        if (!isAAltro && isBAltro) return -1;
+                        return a.name.localeCompare(b.name);
+                    });
+                    setCategories(sortedCats);
                 } else {
                     throw new Error("Risorse non trovate");
                 }

@@ -49,6 +49,19 @@ public class AppUserService {
 
     @PostConstruct
     public void init() {
+        // Creazione Admin
+        if (userRepository.findByEmail("admin@socialpizza.it").isEmpty()) {
+            AppUser admin = new AppUser();
+            admin.setName("Admin");
+            admin.setSurname("SocialPizza");
+            admin.setEmail("admin@socialpizza.it");
+            admin.setPassword("admin123");
+            admin.setRole("ADMIN");
+            admin.setIsVerified(true);
+            admin.setBio("Super admin di SocialPizza");
+            userRepository.save(admin);
+        }
+
         // Creazione Ristoratore (Luigi)
         if (userRepository.findByEmail("luigi@pizzeria.it").isEmpty()) {
             AppUser luigi = new AppUser();

@@ -41,6 +41,18 @@ export function MyRequests({ defaultTab = "created" }: MyRequestsProps) {
         fetchMyEvents();
     }, []);
 
+    const confirmWithToast = (message: string) => new Promise<boolean>((resolve) => {
+        const id = toast.custom((t) => (
+            <div style={{ background: "#fff", padding: "12px 14px", borderRadius: "10px", boxShadow: "0 6px 18px rgba(0,0,0,0.12)", display: "flex", gap: "10px", alignItems: "center", minWidth: "320px" }}>
+                <span>{message}</span>
+                <div style={{ display: "flex", gap: "8px", marginLeft: "auto" }}>
+                    <button style={{ padding: "6px 10px", borderRadius: "8px", border: "1px solid #ddd", background: "#f5f5f5", cursor: "pointer" }} onClick={() => { toast.dismiss(id); resolve(false); }}>No</button>
+                    <button style={{ padding: "6px 10px", borderRadius: "8px", border: "none", background: "#f1006b", color: "white", cursor: "pointer" }} onClick={() => { toast.dismiss(id); resolve(true); }}>Sì</button>
+                </div>
+            </div>
+        ), { duration: 4000, position: "top-center" });
+    });
+
     const handleWithdraw = async (eventId: number) => {
         if (!confirm("Vuoi davvero ritirare questa proposta?")) return;
         try {
@@ -60,7 +72,8 @@ export function MyRequests({ defaultTab = "created" }: MyRequestsProps) {
     };
 
     const handleLeave = async (eventId: number) => {
-        if (!confirm("Vuoi davvero annullare la tua partecipazione?")) return;
+        const confirmed = await confirmWithToast("Vuoi davvero annullare la tua partecipazione?");
+        if (!confirmed) return;
         try {
             const response = await fetch(`http://localhost:8081/api/events/${eventId}/leave`, {
                 method: "DELETE",
