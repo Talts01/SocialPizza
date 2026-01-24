@@ -8,6 +8,7 @@ import com.socialpizza.backend.repository.AppUserRepository;
 import com.socialpizza.backend.repository.CategoryRepository;
 import com.socialpizza.backend.repository.CityRepository;
 import com.socialpizza.backend.repository.RestaurantRepository;
+import com.socialpizza.backend.repository.SocialEventRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,6 +43,9 @@ public class AdminController {
 
     @Autowired
     private CityRepository cityRepository;
+
+    @Autowired
+    private SocialEventRepository socialEventRepository;
 
     // --- USERS ---
     @GetMapping("/users")
@@ -123,6 +127,9 @@ public class AdminController {
     @DeleteMapping("/restaurants/{id}")
     public void deleteRestaurant(@PathVariable Long id, HttpSession session) {
         requireAdmin(session);
+        if (socialEventRepository.existsByRestaurantId(id)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ristorante associato a eventi: non eliminabile");
+        }
         restaurantRepository.deleteById(id);
     }
 
@@ -145,6 +152,9 @@ public class AdminController {
     @DeleteMapping("/categories/{id}")
     public void deleteCategory(@PathVariable Long id, HttpSession session) {
         requireAdmin(session);
+        if (socialEventRepository.existsByCategoryId(id)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Categoria utilizzata da eventi: non eliminabile");
+        }
         categoryRepository.deleteById(id);
     }
 
