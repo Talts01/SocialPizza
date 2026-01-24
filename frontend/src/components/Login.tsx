@@ -1,8 +1,9 @@
 import { useState } from "react";
+import type { User } from "../context/UserContext";
 import "./Login.css";
 
 interface LoginProps {
-    onLogin: (user: any) => void;
+    onLogin: (user: User) => void;
 }
 
 export default function Login({ onLogin }: LoginProps) {
@@ -24,7 +25,7 @@ export default function Login({ onLogin }: LoginProps) {
 
             if (response.ok) {
                 const data = await response.json();
-                onLogin(data); 
+                onLogin({ username: data.username, role: data.role }); 
             } else {
                 setError("Credenziali non valide ❌");
             }

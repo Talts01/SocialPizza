@@ -108,8 +108,9 @@ export function AdminDashboard() {
             });
             setCategories(sortedCats);
             setCities(await citiesRes.json());
-        } catch (err: any) {
-            setError(err.message || "Errore sconosciuto");
+        } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : "Errore sconosciuto";
+            setError(msg);
         } finally {
             setLoading(false);
         }
@@ -134,8 +135,9 @@ export function AdminDashboard() {
             }
             await loadData();
             setUserForm({ name: "", surname: "", email: "", password: "", role: "USER", isVerified: false, bio: "" });
-        } catch (err: any) {
-            setError(err.message || "Errore creazione utente");
+        } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : "Errore creazione utente";
+            setError(msg);
         }
     };
 
@@ -150,8 +152,9 @@ export function AdminDashboard() {
                 throw new Error(await res.text());
             }
             await loadData();
-        } catch (err: any) {
-            setError(err.message || "Errore aggiornamento ruolo");
+        } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : "Errore aggiornamento ruolo";
+            setError(msg);
         }
     };
 
@@ -170,8 +173,9 @@ export function AdminDashboard() {
             }
             await loadData();
             setRestaurantForm({ name: "", address: "", maxCapacity: 0 });
-        } catch (err: any) {
-            setError(err.message || "Errore creazione ristorante");
+        } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : "Errore creazione ristorante";
+            setError(msg);
         }
     };
 
@@ -186,8 +190,9 @@ export function AdminDashboard() {
                 throw new Error(await res.text());
             }
             await loadData();
-        } catch (err: any) {
-            setError(err.message || "Errore eliminazione ristorante");
+        } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : "Errore eliminazione ristorante";
+            setError(msg);
         }
     };
 
@@ -206,8 +211,9 @@ export function AdminDashboard() {
             }
             await loadData();
             setCategoryForm({ name: "", description: "" });
-        } catch (err: any) {
-            setError(err.message || "Errore creazione categoria");
+        } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : "Errore creazione categoria";
+            setError(msg);
         }
     };
 
@@ -222,8 +228,9 @@ export function AdminDashboard() {
                 throw new Error(await res.text());
             }
             await loadData();
-        } catch (err: any) {
-            setError(err.message || "Errore eliminazione categoria");
+        } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : "Errore eliminazione categoria";
+            setError(msg);
         }
     };
 

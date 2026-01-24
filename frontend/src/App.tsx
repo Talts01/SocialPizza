@@ -1,4 +1,5 @@
-import { createContext, useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import './App.css';
 import { AdminDashboard } from './components/AdminDashboard';
@@ -9,16 +10,10 @@ import Login from './components/Login';
 import { MyRequests } from './components/MyRequests';
 import { OrganizeEvent } from './components/OrganizeEvent'; // IMPORTA IL NUOVO FILE
 import { RestaurantDashboard } from './components/RestaurantDashboard';
-
-export interface User {
-    username: string;
-    role: string;
-}
+import { UserContext, type User } from './context/UserContext';
 
 // 1. AGGIUNTO "organizza" AI TIPI DI PAGINA
 export type PageType = "eventi" | "richieste" | "dashboard" | "organizza" | "admin";
-
-export const UserContext = createContext<User | null>(null);
 
 function App() {
     const [user, setUser] = useState<User | null>(null);
@@ -65,7 +60,7 @@ function App() {
         </div>;
     }
 
-    let mainContent;
+    let mainContent: ReactNode = null;
     switch (currentPage) {
         case "eventi":
             mainContent = <EventBoard />;
@@ -116,7 +111,7 @@ function App() {
                 </section>
             ) : (
                 <section className="login">
-                    <Login onLogin={(userData: any) => setUser(userData)} />
+                    <Login onLogin={(userData) => setUser(userData)} />
                 </section>
             )}
 

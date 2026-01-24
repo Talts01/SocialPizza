@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import "./Header.css";
 // Importiamo il Context per leggere i dati dell'utente
-import { UserContext } from "../App";
+import { UserContext } from "../context/UserContext";
 
 interface HeaderProps {
     onLogout: () => void;
