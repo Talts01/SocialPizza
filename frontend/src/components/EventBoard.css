@@ -3,7 +3,8 @@
 .event-board-container {
     padding: 20px;
     height: 100%;
-    overflow-y: auto; /* Permette lo scroll se ci sono tante pizze */
+    overflow-y: auto;
+    background-color: #FBF6EB;
 }
 
 /* Intestazione con Titolo e Bottone */
@@ -12,33 +13,36 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-    border-bottom: 2px solid #eee; /* Una linea sottile per separare */
+    border-bottom: 2px solid #A58E74;
     padding-bottom: 10px;
 }
 
 .event-board-title {
-    color: #f1006b;
+    color: #424530;
     margin: 0;
     font-size: 1.8rem;
+    font-weight: bold;
 }
 
 /* Bottone "+ Organizza Pizzata" */
 .organize-btn {
     padding: 10px 15px;
-    background-color: #fdffb9;
-    border: 2px solid #cdcf93;
+    background-color: #FFEFCD;
+    border: 2px solid #A58E74;
     border-radius: 10px;
     font-weight: bold;
-    color: #434343;
+    color: #424530;
     cursor: pointer;
     transition: all 0.2s ease;
-    font-family: "Nunito", sans-serif; /* Assicura il font giusto */
+    font-family: "Nunito", sans-serif;
 }
 
 .organize-btn:hover {
-    background-color: #f4ff62;
-    transform: scale(1.05); /* Effetto ingrandimento al passaggio */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background-color: #E09132;
+    color: #FFFFFF;
+    border-color: #D07F2B;
+    transform: scale(1.05);
+    box-shadow: 0 2px 5px rgba(224, 145, 50, 0.3);
 }
 
 /* Griglia delle Card */
@@ -68,15 +72,15 @@
 .loading-message {
     padding: 20px;
     text-align: center;
-    color: #666;
+    color: #A58E74;
     font-style: italic;
 }
 
 .error-message {
     padding: 20px;
-    color: #d32f2f;
-    background-color: #fdecea;
-    border: 1px solid #d32f2f;
+    color: #D32F2F;
+    background-color: #FFE0E0;
+    border: 1px solid #D32F2F;
     border-radius: 5px;
     margin-bottom: 20px;
 }
@@ -84,23 +88,23 @@
 .empty-message {
     padding: 20px;
     text-align: center;
-    color: #555;
-    background-color: white;
+    color: #A58E74;
+    background-color: #FFFFFF;
     border-radius: 10px;
-    border: 2px dashed #cdcf93;
+    border: 2px dashed #A58E74;
 }
 
 .filters-container {
-    background-color: white;
+    background-color: #FFFFFF;
     padding: 15px;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     display: flex;
-    flex-wrap: wrap; /* Va a capo su schermi piccoli */
+    flex-wrap: wrap;
     gap: 15px;
     align-items: center;
     margin-bottom: 20px;
-    border: 1px solid #eee;
+    border: 2px solid #E0D5C5;
 }
 
 /* Stile comune per tutti gli input */
@@ -108,30 +112,32 @@
 .filter-select,
 .filter-date {
     padding: 10px 15px;
-    border: 1px solid #ddd;
+    border: 1px solid #E0D5C5;
     border-radius: 8px;
     font-size: 0.95rem;
     outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
+    background-color: #FAFAF8;
 }
 
 .filter-input:focus,
 .filter-select:focus,
 .filter-date:focus {
-    border-color: #ff9800;
-    box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
+    border-color: #E09132;
+    box-shadow: 0 0 0 3px rgba(224, 145, 50, 0.1);
+    background-color: #FFFFFF;
 }
 
 /* Larghezze specifiche */
 .filter-input {
-    flex: 2; /* La barra di ricerca occupa più spazio */
+    flex: 2;
     min-width: 200px;
 }
 
 .filter-select {
     flex: 1;
     min-width: 150px;
-    background-color: white;
+    background-color: #FFFFFF;
     cursor: pointer;
 }
 
@@ -139,5 +145,5 @@
     flex: 1;
     min-width: 130px;
     cursor: pointer;
-    color: #555;
+    color: #424530;
 }

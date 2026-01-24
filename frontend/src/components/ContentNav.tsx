@@ -19,7 +19,7 @@ export function ContentNav({ activePage, onNavigate }: ContentNavProps) {
             <div 
                 className={getClass("organizza")} 
                 onClick={() => onNavigate("organizza")}
-                style={{cursor: "pointer", fontWeight: "bold", color: "#e65100"}}
+                style={{fontWeight: 'bold'}}
             >
                 🍕 Organizza Pizzata
             </div>
@@ -27,7 +27,6 @@ export function ContentNav({ activePage, onNavigate }: ContentNavProps) {
             <div 
                 className={getClass("eventi")} 
                 onClick={() => onNavigate("eventi")}
-                style={{cursor: "pointer"}}
             >
                 📅 Bacheca Eventi
             </div>
@@ -35,7 +34,6 @@ export function ContentNav({ activePage, onNavigate }: ContentNavProps) {
             <div 
                 className={getClass("richieste")} 
                 onClick={() => onNavigate("richieste")}
-                style={{cursor: "pointer"}}
             >
                 🎟 I Miei Eventi
             </div>
@@ -43,7 +41,6 @@ export function ContentNav({ activePage, onNavigate }: ContentNavProps) {
             <div 
                 className={getClass("dashboard")} 
                 onClick={() => onNavigate("dashboard")}
-                style={{cursor: "pointer"}}
             >
                 📋 Stato Eventi
             </div>
@@ -52,7 +49,6 @@ export function ContentNav({ activePage, onNavigate }: ContentNavProps) {
                 <div
                     className={getClass("admin")}
                     onClick={() => onNavigate("admin")}
-                    style={{ cursor: "pointer", fontWeight: "bold" }}
                 >
                     🛠 Area Admin
                 </div>

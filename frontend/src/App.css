@@ -2,14 +2,33 @@
 
 /* Variabili CSS per facilitare la personalizzazione */
 :root {
-  --bg-primary: #f4f4f9;
-  --bg-secondary: white;
-  --text-primary: #333;
-  --text-secondary: #666;
-  --accent: #ff6347;
-  --accent-hover: #e5533d;
-  --border: #e0e0e0;
-  --shadow: rgba(0,0,0,0.1);
+  /* Primary Colors */
+  --color-fern: #424530;
+  --color-natural: #A58E74;
+  --color-apricot: #E09132;
+  --color-warm-ivory: #FFEFCD;
+  --color-warm-offwhite: #FBF6EB;
+  --color-soft-white: #FFFFFF;
+
+  /* Background Colors */
+  --bg-primary: #FBF6EB;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #FFEFCD;
+  --bg-dark: #424530;
+
+  /* Text Colors */
+  --text-primary: #424530;
+  --text-secondary: #A58E74;
+  --text-inverse: #FBF6EB;
+  --text-accent: #E09132;
+
+  /* UI & Interaction */
+  --accent: #E09132;
+  --accent-hover: #D07F2B;
+  --border: #A58E74;
+  --border-light: rgba(165, 142, 116, 0.3);
+  --shadow: rgba(0,0,0,0.08);
+  --disabled: rgba(165, 142, 116, 0.4);
 }
 
 * {
@@ -82,8 +101,8 @@ body {
 
 .left-col {
   width: 250px;
-  background-color: var(--bg-secondary);
-  border-right: 1px solid var(--border);
+  background-color: var(--bg-tertiary);
+  border-right: 2px solid var(--border);
   flex-shrink: 0;
   padding: 20px 0;
 }

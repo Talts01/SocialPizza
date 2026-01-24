@@ -1,5 +1,5 @@
 .filters-container {
-    background-color: white;
+    background-color: #FFFFFF;
     padding: 15px;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
@@ -8,18 +8,20 @@
     gap: 15px;
     align-items: center;
     margin-bottom: 20px;
-    border: 1px solid #eee;
+    border: 2px solid #E0D5C5;
 }
 
 /* Input Styles */
 .filter-input,
 .filter-select {
     padding: 10px 15px;
-    border: 1px solid #ddd;
+    border: 2px solid #E0D5C5;
     border-radius: 8px;
     font-size: 0.95rem;
     outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
+    background-color: #FAFAF8;
+    color: #424530;
 }
 
 .filter-input {
@@ -30,7 +32,7 @@
 .filter-select {
     flex: 1;
     min-width: 150px;
-    background-color: white;
+    background-color: #FFFFFF;
     cursor: pointer;
 }
 
@@ -38,45 +40,46 @@
 .date-filter-group {
     display: flex;
     align-items: center;
-    position: relative; /* Per gestire posizionamenti */
+    position: relative;
     flex: 1;
     min-width: 160px;
-    background-color: white; /* Uniformità */
+    background-color: #FFFFFF;
 }
 
 /* L'input data deve riempire il gruppo */
 .filter-date {
     width: 100%;
     padding: 10px 15px;
-    border: 1px solid #ddd;
+    border: 2px solid #E0D5C5;
     border-radius: 8px;
     font-size: 0.95rem;
     outline: none;
     cursor: pointer;
-    color: #555;
+    color: #424530;
 }
 
 /* Stile della X Rossa */
 .clear-date-btn {
-    
     background: transparent;
     border: none;
-    color: #d32f2f; /* Rosso scuro */
+    color: #D32F2F;
     font-size: 1rem;
     cursor: pointer;
     z-index: 10;
     padding: 5px;
     font-weight: bold;
+    transition: color 0.2s;
 }
 
 .clear-date-btn:hover {
-    color: #ff0000; /* Rosso acceso all'hover */
+    color: #FF0000;
     transform: scale(1.1);
 }
 
 .filter-input:focus,
 .filter-select:focus,
 .filter-date:focus {
-    border-color: #ff9800;
-    box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
+    border-color: #E09132;
+    box-shadow: 0 0 0 3px rgba(224, 145, 50, 0.1);
+    background-color: #FFFFFF;
 }

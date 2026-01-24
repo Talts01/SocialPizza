@@ -4,43 +4,42 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh; 
-    background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); 
+    background: linear-gradient(135deg, #FFEFCD 0%, #FBF6EB 100%);
 }
 
 /*  Login */
 .login-card {
-    background-color: white;
+    background-color: #FFFFFF;
     padding: 40px;
     border-radius: 20px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
     width: 100%;
     max-width: 400px;
     text-align: center;
-    border: 1px solid #fff3e0;
+    border: 2px solid #A58E74;
 }
 
-
 .login-card h1 {
-    color: #e65100; /* Arancione scuro */
+    color: #424530;
     margin-bottom: 10px;
     font-size: 2rem;
 }
 
 .subtitle {
-    color: #666;
+    color: #A58E74;
     margin-bottom: 30px;
     font-size: 0.95rem;
 }
 
 /* Messaggio di Errore */
 .error-msg {
-    background-color: #ffebee;
-    color: #d32f2f;
+    background-color: #FFE0E0;
+    color: #D32F2F;
     padding: 10px;
     border-radius: 8px;
     margin-bottom: 20px;
     font-size: 0.9rem;
-    border: 1px solid #ffcdd2;
+    border: 1px solid #FFCCCC;
 }
 
 /* Campi di Input */
@@ -52,26 +51,26 @@
 .login-input {
     width: 100%;
     padding: 12px 15px;
-    border: 2px solid #eee;
+    border: 2px solid #E0D5C5;
     border-radius: 10px;
     font-size: 1rem;
     transition: all 0.3s ease;
     outline: none;
-    background-color: #fafafa;
+    background-color: #FAFAF8;
 }
 
 .login-input:focus {
-    border-color: #ff9800; 
-    background-color: white;
-    box-shadow: 0 0 0 4px rgba(255, 152, 0, 0.1);
+    border-color: #E09132;
+    background-color: #FFFFFF;
+    box-shadow: 0 0 0 4px rgba(224, 145, 50, 0.1);
 }
 
 /* Bottone */
 .login-btn {
     width: 100%;
     padding: 14px;
-    background: linear-gradient(135deg, #ff9800, #f57c00);
-    color: white;
+    background: linear-gradient(135deg, #E09132, #D07F2B);
+    color: #FFFFFF;
     border: none;
     border-radius: 30px;
     font-size: 1.1rem;
@@ -83,7 +82,7 @@
 
 .login-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(245, 124, 0, 0.4);
+    box-shadow: 0 5px 15px rgba(224, 145, 50, 0.3);
 }
 
 .login-btn:active {

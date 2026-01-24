@@ -4,8 +4,8 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: white; /* O il colore che preferisci */
-    border-bottom: 1px solid #ccc;
+    background-color: #FFFFFF;
+    border-bottom: 2px solid #A58E74;
     grid-row-start: 1;
     grid-row-end: 2;
 }
@@ -14,7 +14,7 @@ header {
     padding-left: 10px;
     font-weight: bold;
     font-size: 1.5rem;
-    color: #f1006b; /* Colore SocialPizza */
+    color: #424530;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -29,15 +29,18 @@ nav.user-nav {
 }
 
 nav.user-nav .nav-item {
-    background-color: #fdffb9;
+    background-color: #FFEFCD;
     padding: 10px 20px;
     font-weight: bold;
-    color: #434343;
+    color: #424530;
     border-radius: 15px;
-    border: 2px solid #cdcf93;
+    border: 2px solid #A58E74;
     cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 nav.user-nav .nav-item:hover {
-    background-color: #f4ff62;
+    background-color: #E09132;
+    color: #FFFFFF;
+    border-color: #D07F2B;
 }

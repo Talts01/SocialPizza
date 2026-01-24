@@ -5,21 +5,22 @@
 }
 
 .admin-card {
-    background: #ffffff;
-    border: 2px solid #f1f1f1;
+    background: #FFFFFF;
+    border: 2px solid #E0D5C5;
     border-radius: 12px;
     padding: 16px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
 }
 
 .admin-card header h3 {
     margin: 0;
-    color: #f1006b;
+    color: #424530;
+    font-size: 1.3rem;
 }
 
 .admin-card header p {
     margin: 4px 0 12px;
-    color: #666;
+    color: #A58E74;
     font-size: 0.9rem;
 }
 
@@ -34,10 +35,16 @@
     display: flex;
     justify-content: space-between;
     gap: 12px;
-    border: 1px solid #ececec;
+    border: 2px solid #E0D5C5;
     border-radius: 10px;
     padding: 10px 12px;
-    background: #fafafa;
+    background: #FBF6EB;
+    transition: all 0.2s ease;
+}
+
+.row:hover {
+    background: #FFEFCD;
+    border-color: #A58E74;
 }
 
 .row-actions {
@@ -59,9 +66,21 @@
 .row select {
     width: 100%;
     padding: 8px 10px;
-    border: 1px solid #d9d9d9;
+    border: 2px solid #E0D5C5;
     border-radius: 8px;
     font-size: 0.95rem;
+    background-color: #FFFFFF;
+    color: #424530;
+    transition: border-color 0.2s;
+}
+
+.form input:focus,
+.form textarea:focus,
+.form select:focus,
+.row select:focus {
+    outline: none;
+    border-color: #E09132;
+    box-shadow: 0 0 0 3px rgba(224, 145, 50, 0.1);
 }
 
 .field-label {
@@ -70,7 +89,8 @@
     align-items: center;
     gap: 8px;
     font-size: 0.95rem;
-    color: #444;
+    color: #424530;
+    font-weight: 600;
 }
 
 .field-label input {
@@ -79,21 +99,31 @@
 
 .form textarea {
     min-height: 60px;
+    resize: vertical;
 }
 
 .form button,
 .row button {
     padding: 8px 12px;
-    background: #f1006b;
-    color: #fff;
+    background: #E09132;
+    color: #FFFFFF;
     border: none;
     border-radius: 8px;
     cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
 }
 
 .form button:hover,
 .row button:hover {
-    background: #d9005f;
+    background: #D07F2B;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(224, 145, 50, 0.3);
+}
+
+.form button:active,
+.row button:active {
+    transform: translateY(0);
 }
 
 .checkbox {
@@ -101,6 +131,11 @@
     align-items: center;
     gap: 6px;
     font-size: 0.95rem;
+    color: #424530;
+}
+
+.checkbox input {
+    width: auto;
 }
 
 .grid-2 {
@@ -110,19 +145,20 @@
 }
 
 .muted {
-    color: #777;
+    color: #A58E74;
     font-size: 0.9rem;
 }
 
 .pill {
     padding: 4px 8px;
-    background: #e9f7ef;
-    color: #2c8a4b;
+    background: #FFEFCD;
+    color: #424530;
     border-radius: 999px;
     font-size: 0.8rem;
+    border: 1px solid #A58E74;
 }
 
 .error {
-    border-color: #ffb3b3;
-    color: #c62828;
+    border-color: #D32F2F;
+    color: #D32F2F;
 }
