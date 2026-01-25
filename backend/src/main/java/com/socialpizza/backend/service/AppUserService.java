@@ -2,8 +2,10 @@ package com.socialpizza.backend.service;
 
 import com.socialpizza.backend.entity.AppUser;
 import com.socialpizza.backend.repository.AppUserRepository;
+import com.socialpizza.backend.repository.ParticipationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import jakarta.annotation.PostConstruct;
 
 import java.util.Optional;
@@ -14,15 +16,45 @@ public class AppUserService {
     @Autowired
     private AppUserRepository userRepository;
 
-    // REGISTRAZIONE
+    @Autowired
+    private ParticipationRepository participationRepository;
+
+    // REGISTRAZIONE CON VALIDAZIONI
     public AppUser registerUser(AppUser user) {
+        // Validazione nome
+        if (user.getName() == null || user.getName().trim().isEmpty()) {
+            throw new RuntimeException("Nome obbligatorio");
+        }
+        
+        // Validazione email
+        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
+            throw new RuntimeException("Email obbligatoria");
+        }
+        if (!user.getEmail().contains("@")) {
+            throw new RuntimeException("Email non valida");
+        }
+        
         Optional<AppUser> existingUser = userRepository.findByEmail(user.getEmail());
         if (existingUser.isPresent()) {
-            throw new RuntimeException("Email già registrata!");
+            throw new RuntimeException("Email già registrata");
         }
-        if (user.getRole() == null || user.getRole().isEmpty()) {
+        
+        // Validazione password
+        if (user.getPassword() == null || user.getPassword().length() < 6) {
+            throw new RuntimeException("Password deve avere almeno 6 caratteri");
+        }
+        
+        // Validazione ruolo
+        if (user.getRole() == null || user.getRole().trim().isEmpty()) {
             user.setRole("USER");
+        } else {
+            String role = user.getRole().toUpperCase();
+            if (!role.equals("USER") && !role.equals("RESTAURATEUR") && !role.equals("ADMIN")) {
+                throw new RuntimeException("Ruolo non valido (USER, RESTAURATEUR, ADMIN)");
+            }
+            user.setRole(role);
         }
+        
         return userRepository.save(user);
     }
 
@@ -47,45 +79,39 @@ public class AppUserService {
         return userRepository.findByEmail(email).orElse(null);
     }
 
+    // BAN ACCOUNT (ELIMINA UTENTE)
+    @Transactional
+    public void banUser(Long userId, Long adminId) {
+        // Verifica che admin esista e sia ADMIN
+        AppUser admin = userRepository.findById(adminId)
+                .orElseThrow(() -> new RuntimeException("Admin non trovato"));
+        
+        if (!"ADMIN".equals(admin.getRole())) {
+            throw new RuntimeException("Solo ADMIN possono bannare utenti");
+        }
+        
+        // Verifica utente da bannare esista
+        AppUser userToBan = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+        
+        // Non puoi bannare te stesso
+        if (userId.equals(adminId)) {
+            throw new RuntimeException("Non puoi bannare te stesso");
+        }
+        
+        // Non puoi bannare un altro ADMIN
+        if ("ADMIN".equals(userToBan.getRole())) {
+            throw new RuntimeException("Non puoi bannare un altro ADMIN");
+        }
+        
+        // Cancella tutte le partecipazioni
+        participationRepository.deleteByUserId(userId);
+        
+        // Cancella utente
+        userRepository.deleteById(userId);
+    }
+
     @PostConstruct
     public void init() {
-        // Creazione Admin
-        if (userRepository.findByEmail("admin@socialpizza.it").isEmpty()) {
-            AppUser admin = new AppUser();
-            admin.setName("Admin");
-            admin.setSurname("SocialPizza");
-            admin.setEmail("admin@socialpizza.it");
-            admin.setPassword("admin123");
-            admin.setRole("ADMIN");
-            admin.setIsVerified(true);
-            admin.setBio("Super admin di SocialPizza");
-            userRepository.save(admin);
-        }
-
-        // Creazione Ristoratore (Luigi)
-        if (userRepository.findByEmail("luigi@pizzeria.it").isEmpty()) {
-            AppUser luigi = new AppUser();
-            luigi.setName("Luigi");
-            luigi.setSurname("Rossi");
-            luigi.setEmail("luigi@pizzeria.it");
-            luigi.setPassword("password123");
-            luigi.setRole("RESTAURATEUR");
-            luigi.setIsVerified(true);
-            luigi.setBio("Proprietario della Pizzeria Da Luigi");
-            userRepository.save(luigi);
-        }
-
-        // Creazione Pizza Lover (Mario)
-        if (userRepository.findByEmail("mario@gmail.com").isEmpty()) {
-            AppUser mario = new AppUser();
-            mario.setName("Mario");
-            mario.setSurname("Bianchi");
-            mario.setEmail("mario@gmail.com");
-            mario.setPassword("12345");
-            mario.setRole("USER");
-            mario.setIsVerified(false);
-            mario.setBio("Amante di pizza e anime");
-            userRepository.save(mario);
-        }
     }
 }

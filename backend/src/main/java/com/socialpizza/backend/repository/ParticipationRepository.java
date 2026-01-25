@@ -22,4 +22,8 @@ public interface ParticipationRepository extends JpaRepository<Participation, Lo
     @Transactional
     @Modifying
     void deleteByEventId(Long eventId);
+
+    @Transactional
+    @Modifying
+    void deleteByUserId(Long userId);
 }

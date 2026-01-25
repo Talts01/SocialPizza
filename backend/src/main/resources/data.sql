@@ -9,16 +9,17 @@ DELETE FROM city;
 
 -- Utenti ristoratori (ID espliciti per evitare subquery multiple)
 INSERT INTO app_user (id, name, surname, email, password, role, is_verified, bio)
-VALUES (1, 'Luigi', 'Rossi', 'luigi@pizzeria.it', 'password123', 'RESTAURATEUR', TRUE, 'Proprietario della Pizzeria Da Luigi');
+VALUES (1, 'Luigi', 'Rossi', 'luigi@pizzeria.it', 'password123', 'RESTAURATEUR', FALSE, 'Proprietario della Pizzeria Da Luigi');
 
 INSERT INTO app_user (id, name, surname, email, password, role, is_verified, bio)
-VALUES (2, 'Walter', 'Bianchi', 'walter@pizzeria.it', 'password123', 'RESTAURATEUR', TRUE, 'Gestore della Pizzeria da Walter');
+VALUES (2, 'Walter', 'Bianchi', 'walter@pizzeria.it', 'password123', 'RESTAURATEUR', FALSE, 'Gestore della Pizzeria da Walter');
 
 INSERT INTO app_user (id, name, surname, email, password, role, is_verified, bio)
 VALUES (3, 'Luigi', 'Niso', 'admin1@socialpizza.it', 'admin123', 'ADMIN', TRUE, 'Admin di SocialPizza');
 
 INSERT INTO app_user (id, name, surname, email, password, role, is_verified, bio)
 VALUES (4, 'Walter', 'Barucco', 'admin2@socialpizza.it', 'admin123', 'ADMIN', TRUE, 'Admin di SocialPizza');
+
 
 -- Città
 INSERT INTO city (id, name, CAP) VALUES (1, 'Milano', '20100');

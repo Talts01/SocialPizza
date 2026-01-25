@@ -1,5 +1,6 @@
 import type { FormEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
+import toast from "react-hot-toast";
 import type { Category, City } from "../types";
 import "./AdminDashboard.css";
 
@@ -79,6 +80,10 @@ export function AdminDashboard() {
 
     const roleOptions = useMemo(() => ["ADMIN", "RESTAURATEUR", "USER"], []);
     const restaurateurUsers = useMemo(() => users.filter(u => u.role === "RESTAURATEUR"), [users]);
+    const availableOwners = useMemo(
+        () => restaurateurUsers.filter(u => !restaurants.some(r => r.ownerId === u.id)),
+        [restaurateurUsers, restaurants]
+    );
 
     const loadData = async () => {
         setLoading(true);
@@ -123,6 +128,34 @@ export function AdminDashboard() {
     const handleCreateUser = async (evt: FormEvent) => {
         evt.preventDefault();
         setError(null);
+        
+        // Validazioni frontend
+        if (!userForm.name.trim()) {
+            setError("Nome obbligatorio");
+            toast.error("Nome obbligatorio");
+            return;
+        }
+        if (!userForm.surname.trim()) {
+            setError("Cognome obbligatorio");
+            toast.error("Cognome obbligatorio");
+            return;
+        }
+        if (!userForm.email.trim()) {
+            setError("Email obbligatoria");
+            toast.error("Email obbligatoria");
+            return;
+        }
+        if (!userForm.email.includes("@")) {
+            setError("Email non valida");
+            toast.error("Email non valida");
+            return;
+        }
+        if (!userForm.password || userForm.password.length < 6) {
+            setError("Password deve avere almeno 6 caratteri");
+            toast.error("Password deve avere almeno 6 caratteri");
+            return;
+        }
+        
         try {
             const res = await fetch(`${API_ADMIN}/users`, {
                 method: "POST",
@@ -135,9 +168,11 @@ export function AdminDashboard() {
             }
             await loadData();
             setUserForm({ name: "", surname: "", email: "", password: "", role: "USER", isVerified: false, bio: "" });
+            toast.success("Utente creato");
         } catch (err: unknown) {
             const msg = err instanceof Error ? err.message : "Errore creazione utente";
             setError(msg);
+            toast.error(msg);
         }
     };
 
@@ -158,9 +193,54 @@ export function AdminDashboard() {
         }
     };
 
+    const handleBanUser = async (userId: number) => {
+        if (!confirm("Sei sicuro di voler bannare questo utente? Questa azione è irreversibile.")) {
+            return;
+        }
+        setError(null);
+        try {
+            const res = await fetch(`${API_ADMIN}/users/${userId}/ban`, {
+                method: "DELETE",
+                credentials: "include",
+            });
+            if (!res.ok) {
+                throw new Error(await res.text());
+            }
+            await loadData();
+            toast.success("Utente bannato");
+        } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : "Errore eliminazione utente";
+            setError(msg);
+            toast.error(msg);
+        }
+    };
+
     const handleCreateRestaurant = async (evt: FormEvent) => {
         evt.preventDefault();
         setError(null);
+        
+        // Validazioni frontend
+        if (!restaurantForm.name.trim()) {
+            setError("Nome ristorante obbligatorio");
+            toast.error("Nome ristorante obbligatorio");
+            return;
+        }
+        if (!restaurantForm.address.trim()) {
+            setError("Indirizzo obbligatorio");
+            toast.error("Indirizzo obbligatorio");
+            return;
+        }
+        if (!restaurantForm.cityId) {
+            setError("Città obbligatoria");
+            toast.error("Città obbligatoria");
+            return;
+        }
+        if (!restaurantForm.ownerId) {
+            setError("Proprietario obbligatorio");
+            toast.error("Proprietario obbligatorio");
+            return;
+        }
+        
         try {
             const res = await fetch(`${API_ADMIN}/restaurants`, {
                 method: "POST",
@@ -173,9 +253,11 @@ export function AdminDashboard() {
             }
             await loadData();
             setRestaurantForm({ name: "", address: "", maxCapacity: 0 });
+            toast.success("Ristorante creato");
         } catch (err: unknown) {
             const msg = err instanceof Error ? err.message : "Errore creazione ristorante";
             setError(msg);
+            toast.error(msg);
         }
     };
 
@@ -199,6 +281,14 @@ export function AdminDashboard() {
     const handleCreateCategory = async (evt: FormEvent) => {
         evt.preventDefault();
         setError(null);
+        
+        // Validazioni frontend
+        if (!categoryForm.name.trim()) {
+            setError("Nome categoria obbligatorio");
+            toast.error("Nome categoria obbligatorio");
+            return;
+        }
+        
         try {
             const res = await fetch(`${API_ADMIN}/categories`, {
                 method: "POST",
@@ -211,9 +301,11 @@ export function AdminDashboard() {
             }
             await loadData();
             setCategoryForm({ name: "", description: "" });
+            toast.success("Categoria creata");
         } catch (err: unknown) {
             const msg = err instanceof Error ? err.message : "Errore creazione categoria";
             setError(msg);
+            toast.error(msg);
         }
     };
 
@@ -235,7 +327,6 @@ export function AdminDashboard() {
     };
 
     if (loading) return <div className="admin-card">Caricamento area admin...</div>;
-    if (error) return <div className="admin-card error">{error}</div>;
 
     return (
         <div className="admin-grid">
@@ -259,6 +350,14 @@ export function AdminDashboard() {
                                     {roleOptions.map(r => <option key={r} value={r}>{r}</option>)}
                                 </select>
                                 {user.isVerified && <span className="pill">Verificato</span>}
+                                <button
+                                    type="button"
+                                    className="btn-danger"
+                                    onClick={() => handleBanUser(user.id)}
+                                    title="Banna utente"
+                                >
+                                    🚫 Ban
+                                </button>
                             </div>
                         </div>
                     ))}
@@ -327,7 +426,7 @@ export function AdminDashboard() {
                         </select>
                         <select value={restaurantForm.ownerId ?? ""} onChange={e => setRestaurantForm(prev => ({ ...prev, ownerId: e.target.value ? Number(e.target.value) : undefined }))}>
                             <option value="">Ristoratore</option>
-                            {restaurateurUsers.map(u => (
+                            {availableOwners.map(u => (
                                 <option key={u.id} value={u.id}>{u.email}</option>
                             ))}
                         </select>

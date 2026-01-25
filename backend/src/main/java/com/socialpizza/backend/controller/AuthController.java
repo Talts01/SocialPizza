@@ -21,6 +21,8 @@ public class AuthController {
         try {
             AppUser user = userService.login(loginData.getEmail(), loginData.getPassword());
             session.setAttribute("username", user.getEmail());
+            session.setAttribute("userId", user.getId());
+            session.setAttribute("role", user.getRole());
             return ResponseEntity.ok(new SessionData(user.getName(), user.getRole(), "Login effettuato"));
         } catch (RuntimeException e) {
             return ResponseEntity.status(401).body(new SessionData("", "", "Credenziali errate"));

@@ -162,3 +162,11 @@
     border-color: #D32F2F;
     color: #D32F2F;
 }
+.btn-danger {
+    background: #D32F2F !important;
+    color: white !important;
+}
+
+.btn-danger:hover {
+    background: #B71C1C !important;
+}

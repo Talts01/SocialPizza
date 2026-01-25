@@ -9,6 +9,7 @@ import com.socialpizza.backend.repository.CategoryRepository;
 import com.socialpizza.backend.repository.CityRepository;
 import com.socialpizza.backend.repository.RestaurantRepository;
 import com.socialpizza.backend.repository.SocialEventRepository;
+import com.socialpizza.backend.service.AppUserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,9 @@ public class AdminController {
     private AppUserRepository userRepository;
 
     @Autowired
+    private AppUserService userService;
+
+    @Autowired
     private RestaurantRepository restaurantRepository;
 
     @Autowired
@@ -60,10 +64,24 @@ public class AdminController {
     @PostMapping("/users")
     public AdminUserDTO createUser(@RequestBody CreateUserRequest request, HttpSession session) {
         requireAdmin(session);
-        if (request.email() == null || request.password() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email e password sono obbligatorie");
+        
+        // Validazioni
+        if (request.name() == null || request.name().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nome obbligatorio");
         }
-
+        if (request.surname() == null || request.surname().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cognome obbligatorio");
+        }
+        if (request.email() == null || request.email().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email obbligatoria");
+        }
+        if (!request.email().contains("@")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email non valida");
+        }
+        if (request.password() == null || request.password().length() < 6) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password deve avere almeno 6 caratteri");
+        }
+        
         if (userRepository.findByEmail(request.email()).isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email già registrata");
         }
@@ -79,6 +97,16 @@ public class AdminController {
 
         AppUser saved = userRepository.save(user);
         return AdminUserDTO.from(saved);
+    }
+
+    @DeleteMapping("/users/{id}/ban")
+    public void banUser(@PathVariable Long id, HttpSession session) {
+        requireAdmin(session);
+        String email = (String) session.getAttribute("username");
+        AppUser admin = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Sessione non valida"));
+
+        userService.banUser(id, admin.getId());
     }
 
     @PatchMapping("/users/{id}/role")
@@ -104,8 +132,19 @@ public class AdminController {
     @PostMapping("/restaurants")
     public RestaurantAdminDTO createRestaurant(@RequestBody CreateRestaurantRequest request, HttpSession session) {
         requireAdmin(session);
-        if (request.name() == null || request.cityId() == null || request.ownerId() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "name, cityId e ownerId sono obbligatori");
+        
+        // Validazioni
+        if (request.name() == null || request.name().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nome ristorante obbligatorio");
+        }
+        if (request.address() == null || request.address().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Indirizzo obbligatorio");
+        }
+        if (request.cityId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Città obbligatoria");
+        }
+        if (request.ownerId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Proprietario obbligatorio");
         }
 
         City city = cityRepository.findById(request.cityId())
@@ -143,9 +182,12 @@ public class AdminController {
     @PostMapping("/categories")
     public Category createCategory(@RequestBody Category category, HttpSession session) {
         requireAdmin(session);
-        if (category.getName() == null || category.getName().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il nome è obbligatorio");
+        
+        // Validazioni
+        if (category.getName() == null || category.getName().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nome categoria obbligatorio");
         }
+        
         return categoryRepository.save(category);
     }
 
