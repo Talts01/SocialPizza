@@ -16,7 +16,7 @@ public interface ParticipationRepository extends JpaRepository<Participation, Lo
 
     boolean existsByUserIdAndEventId(Long userId, Long eventId);
 
-    // OTTIMIZZAZIONE: Conta i partecipanti direttamente nel DB
+
     long countByEventId(Long eventId);
 
     @Transactional

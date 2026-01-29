@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Controller per le risorse necessari per popolare form, menu a tendina e filtri nel frontend.
+ */
 @RestController
 @RequestMapping("/api/resources")
 @CrossOrigin(origins = "${cors.allowed.origins}", allowCredentials = "true")
@@ -27,6 +30,7 @@ public class ResourceController {
 
     @Autowired
     private RestaurantRepository restaurantRepository;
+
 
     @GetMapping("/cities")
     public List<City> getAllCities() {

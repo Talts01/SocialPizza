@@ -1,4 +1,6 @@
+// React hooks usati nel componente
 import { useEffect, useState } from "react";
+// Stili per i filtri
 import "./EventFilters.css";
 
 export interface FilterState {
@@ -13,16 +15,20 @@ interface EventFiltersProps {
 }
 
 export function EventFilters({ onFilter }: EventFiltersProps) {
-    const [searchText, setSearchText] = useState("");
-    const [selectedCity, setSelectedCity] = useState(0);
-    const [selectedCategory, setSelectedCategory] = useState(0);
-    const [dateFrom, setDateFrom] = useState("");
+    // Stato dei filtri controllati
+    const [searchText, setSearchText] = useState(""); // testo della ricerca 
+    const [selectedCity, setSelectedCity] = useState(0); // id città 
+    const [selectedCategory, setSelectedCategory] = useState(0); // categoria 
+    const [dateFrom, setDateFrom] = useState(""); // data 
 
+    // Liste caricate da API per popolare le select
     const [cities, setCities] = useState<{id: number, name: string}[]>([]);
     const [categories, setCategories] = useState<{id: number, name: string}[]>([]);
 
+    // valore minimo dell'input date 
     const todayStr = new Date().toISOString().split("T")[0];
 
+    // Carica città e categorie una sola volta all'avvio del componente
     useEffect(() => {
         fetch("http://localhost:8081/api/resources/cities")
             .then(res => res.ok ? res.json() : [])
@@ -35,6 +41,7 @@ export function EventFilters({ onFilter }: EventFiltersProps) {
             .catch(() => {});
     }, []);
 
+    // ogni volta che cambia uno dei filtri
     useEffect(() => {
         onFilter({
             searchText,
@@ -42,17 +49,15 @@ export function EventFilters({ onFilter }: EventFiltersProps) {
             category: selectedCategory,
             dateFrom
         });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchText, selectedCity, selectedCategory, dateFrom]);
 
-    // Funzione per pulire la data
+    // Resetta la data 
     const handleClearDate = () => {
         setDateFrom("");
     };
 
     return (
         <div className="filters-container">
-            {/* Ricerca Testuale */}
             <input 
                 type="text" 
                 placeholder="🔍 Cerca evento o pizzeria..." 
@@ -61,7 +66,6 @@ export function EventFilters({ onFilter }: EventFiltersProps) {
                 onChange={e => setSearchText(e.target.value)}
             />
 
-            {/* Città */}
             <select 
                 className="filter-select"
                 value={selectedCity}
@@ -71,7 +75,6 @@ export function EventFilters({ onFilter }: EventFiltersProps) {
                 {cities.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
 
-            {/* Categoria */}
             <select 
                 className="filter-select"
                 value={selectedCategory}
@@ -81,7 +84,6 @@ export function EventFilters({ onFilter }: EventFiltersProps) {
                 {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
 
-            {/* GRUPPO DATA CON LA X */}
             <div className="date-filter-group">
                 <input 
                     type="date" 
@@ -91,7 +93,6 @@ export function EventFilters({ onFilter }: EventFiltersProps) {
                     onChange={e => setDateFrom(e.target.value)}
                 />
                 
-                {/* Mostra la X rossa solo se c'è una data selezionata */}
                 {dateFrom && (
                     <button 
                         className="clear-date-btn" 

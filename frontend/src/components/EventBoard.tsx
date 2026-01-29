@@ -1,18 +1,21 @@
 import { useEffect, useState } from "react";
-import toast from 'react-hot-toast';
 import type { SocialEvent } from "../types";
 import "./EventBoard.css";
 import { EventCard } from "./EventCard";
 import { EventFilters, type FilterState } from "./EventFilters";
 
+// visualizzare e gestire gli eventi pubblici
 export function EventBoard() {
-    const [events, setEvents] = useState<SocialEvent[]>([]);
-    const [filteredEvents, setFilteredEvents] = useState<SocialEvent[]>([]);
-    const [joinedEventIds, setJoinedEventIds] = useState<Set<number>>(new Set());
+    // Liste degli eventi: tutti gli eventi e quelli filtrati
+    const [events, setEvents] = useState<SocialEvent[]>([]);  // Tutti gli eventi approvati
+    const [filteredEvents, setFilteredEvents] = useState<SocialEvent[]>([]);  // Eventi dopo applicazione filtri
+    const [joinedEventIds, setJoinedEventIds] = useState<Set<number>>(new Set());  // Set di ID degli eventi a cui l'utente ha aderito
     
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+    // Stati UI
+    const [loading, setLoading] = useState(true);  // Indica se i dati sono ancora in caricamento
+    const [error, setError] = useState("");  // Messaggio di errore
 
+    // Carica gli eventi pubblici e quelli a cui l'utente ha aderito
     const fetchData = async () => {
         try {
             const [publicRes, joinedRes] = await Promise.all([
@@ -43,10 +46,11 @@ export function EventBoard() {
         fetchData();
     }, []);
 
+    // Applica i filtri agli eventi
     const handleFilter = (filters: FilterState) => {
         let filtered = [...events];
 
-        // 1. Filtro Testo
+        // Filtro di ricerca: titolo, descrizione, nome ristorante
         if (filters.searchText) {
             const search = filters.searchText.toLowerCase();
             filtered = filtered.filter(evt => 
@@ -56,26 +60,21 @@ export function EventBoard() {
             );
         }
 
-        // 2. Filtro Categoria
+        // Filtro per categoria
         if (filters.category > 0) {
             filtered = filtered.filter(evt => evt.category.id === filters.category);
         }
 
-        // 3. Filtro Città
+        // Filtro per città
         if (filters.city > 0) {
             filtered = filtered.filter(evt => evt.restaurant.city?.id === filters.city);
         }
 
-        // 4. Filtro Data (ESATTA)
+        // Filtro per data specifica
         if (filters.dateFrom) {
-            // Convertiamo la data del filtro in stringa YYYY-MM-DD
             const filterDateStr = filters.dateFrom; 
-
             filtered = filtered.filter(evt => {
-                // Prendiamo la data dell'evento e teniamo solo la parte YYYY-MM-DD
                 const evtDateStr = new Date(evt.eventDate).toISOString().split("T")[0];
-                
-                // Confronto ESATTO: Mostra solo se i giorni coincidono
                 return evtDateStr === filterDateStr;
             });
         }
@@ -83,23 +82,25 @@ export function EventBoard() {
         setFilteredEvents(filtered);
     };
 
+    // iscriversi a un evento
     const handleJoin = async (eventId: number) => {
         try {
+            // Invia la richiesta di iscrizione al server
             const response = await fetch(`http://localhost:8081/api/events/${eventId}/join`, {
                 method: "POST",
                 credentials: "include"
             });
 
             if (response.ok) {
-                toast.success("Iscrizione avvenuta con successo! 🎉");
+                alert("Iscrizione avvenuta con successo! 🎉");
                 setJoinedEventIds(prev => new Set(prev).add(eventId));
             } else {
                 const errorMsg = await response.text();
-                toast.error(errorMsg || "Errore durante l'iscrizione");
+                alert(errorMsg || "Errore durante l'iscrizione"); 
             }
         } catch (error) {
             console.error(error);
-            toast.error("Errore di connessione col server");
+            alert("Errore di connessione col server"); 
         }
     };
 
@@ -108,32 +109,32 @@ export function EventBoard() {
 
     return (
         <div className="event-board-container">
+            {/* Header della bacheca */}
             <div className="event-board-header">
                 <h2 className="event-board-title">Bacheca Eventi</h2>
-                {/* Rimosso pulsante Organizza Pizzata */}
             </div>
 
+            {/* Componente filtri per ricerca e filtrazione degli eventi */}
             <EventFilters onFilter={handleFilter} />
             
+            {/* Mostra messaggio vuoto o lista di eventi */}
             {filteredEvents.length === 0 ? (
                 <div className="empty-message">
                     <p>Nessun evento trovato.</p>
                 </div>
             ) : (
+                // Griglia di carte degli eventi con pulsante di iscrizione
                 <div className="event-list">
                     {filteredEvents.map(evt => (
                         <EventCard 
                             key={evt.id} 
                             event={evt} 
-                            onJoin={handleJoin} 
-                            // Rimosso onDelete che non serviva
-                            isJoined={joinedEventIds.has(evt.id)}
+                            onJoin={handleJoin}  // Callback per iscriversi all'evento
+                            isJoined={joinedEventIds.has(evt.id)}  // Indica se già iscritto
                         />
                     ))}
                 </div>
             )}
-            
-            {/* Rimosso CreateEventForm */}
         </div>
     );
 }

@@ -14,6 +14,6 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name; // Es. "Anime e Manga"
-    private String description; // Es. "Serate dedicate all'animazione giapponese"
+    private String name;
+    private String description;
 }

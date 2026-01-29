@@ -1,15 +1,24 @@
 package com.socialpizza.backend.service;
 
 import com.socialpizza.backend.entity.AppUser;
+import com.socialpizza.backend.entity.Restaurant;
+import com.socialpizza.backend.entity.SocialEvent;
 import com.socialpizza.backend.repository.AppUserRepository;
 import com.socialpizza.backend.repository.ParticipationRepository;
+import com.socialpizza.backend.repository.RestaurantRepository;
+import com.socialpizza.backend.repository.SocialEventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.annotation.PostConstruct;
 
-import java.util.Optional;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+/**
+ * Gestisce registrazione, login, recupero dati e operazioni amministrative
+ */
 @Service
 public class AppUserService {
 
@@ -19,95 +28,109 @@ public class AppUserService {
     @Autowired
     private ParticipationRepository participationRepository;
 
-    // REGISTRAZIONE CON VALIDAZIONI
+    @Autowired
+    private SocialEventRepository eventRepository;
+
+    @Autowired
+    private RestaurantRepository restaurantRepository;
+
+    /**
+     * Registra un nuovo utente nel sistema.
+     */
     public AppUser registerUser(AppUser user) {
-        // Validazione nome
-        if (user.getName() == null || user.getName().trim().isEmpty()) {
-            throw new RuntimeException("Nome obbligatorio");
-        }
-        
-        // Validazione email
-        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
-            throw new RuntimeException("Email obbligatoria");
-        }
-        if (!user.getEmail().contains("@")) {
-            throw new RuntimeException("Email non valida");
-        }
-        
-        Optional<AppUser> existingUser = userRepository.findByEmail(user.getEmail());
-        if (existingUser.isPresent()) {
-            throw new RuntimeException("Email già registrata");
-        }
-        
-        // Validazione password
-        if (user.getPassword() == null || user.getPassword().length() < 6) {
-            throw new RuntimeException("Password deve avere almeno 6 caratteri");
-        }
-        
-        // Validazione ruolo
+        //  Validazione Campi
+        if (user.getName() == null || user.getName().trim().isEmpty()) throw new RuntimeException("Nome obbligatorio");
+        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) throw new RuntimeException("Email obbligatoria");
+
+        // Controllo formato e se ci sono altre email uguali
+        if (!user.getEmail().contains("@")) throw new RuntimeException("Email non valida");
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) throw new RuntimeException("Email già registrata");
+
+        // Controllo Password maggiore di 6 caratteri
+        if (user.getPassword() == null || user.getPassword().length() < 6) throw new RuntimeException("Password min 6 caratteri");
+
+        // Gestione Ruoli
         if (user.getRole() == null || user.getRole().trim().isEmpty()) {
-            user.setRole("USER");
+            user.setRole("UTENTE");
         } else {
             String role = user.getRole().toUpperCase();
-            if (!role.equals("USER") && !role.equals("RESTAURATEUR") && !role.equals("ADMIN")) {
-                throw new RuntimeException("Ruolo non valido (USER, RESTAURATEUR, ADMIN)");
+            if (!role.equals("UTENTE") && !role.equals("RISTORATORE") && !role.equals("ADMIN")) {
+                throw new RuntimeException("Ruolo non valido");
             }
             user.setRole(role);
         }
-        
+
         return userRepository.save(user);
     }
 
-    // LOGIN
+    /**
+     * Gestisce il login verificando email e password..
+     */
     public AppUser login(String email, String password) {
         AppUser user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Utente non trovato"));
 
-        if (!user.getPassword().equals(password)) {
-            throw new RuntimeException("Password errata");
-        }
+        if (!user.getPassword().equals(password)) throw new RuntimeException("Password errata");
         return user;
     }
 
-    // UTILITY
+
+    /**
+     * Recupera un utente tramite ID, lanciando un errore se non esiste.
+     */
     public AppUser getUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Utente non trovato con ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Utente non trovato ID: " + id));
     }
 
+    /**
+     * Recupera un utente tramite Email.
+     */
     public AppUser findByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
     }
 
-    // BAN ACCOUNT (ELIMINA UTENTE)
+
+    /**
+     * Banna un utente dal sistema.
+     */
     @Transactional
     public void banUser(Long userId, Long adminId) {
-        // Verifica che admin esista e sia ADMIN
+        // Verifica che chi sta bannando sia davvero un Admin
         AppUser admin = userRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin non trovato"));
-        
-        if (!"ADMIN".equals(admin.getRole())) {
-            throw new RuntimeException("Solo ADMIN possono bannare utenti");
-        }
-        
-        // Verifica utente da bannare esista
+
+        if (!"ADMIN".equals(admin.getRole())) throw new RuntimeException("Solo ADMIN possono bannare");
+
+        // Verifica che l'utente da bannare esista e non sia l'admin stesso
         AppUser userToBan = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
-        
-        // Non puoi bannare te stesso
+                .orElseThrow(() -> new RuntimeException("Utente da bannare non trovato"));
+
         if (userId.equals(adminId)) {
             throw new RuntimeException("Non puoi bannare te stesso");
         }
-        
-        // Non puoi bannare un altro ADMIN
-        if ("ADMIN".equals(userToBan.getRole())) {
-            throw new RuntimeException("Non puoi bannare un altro ADMIN");
+
+        // RACCOLTA DATI DA ELIMINARE
+        // Dobbiamo trovare tutti gli eventi collegati all'utente.
+        Set<SocialEvent> eventsToDelete = new HashSet<>();
+
+        eventsToDelete.addAll(eventRepository.findByOrganizerId(userId));
+
+
+        List<Restaurant> userRestaurants = restaurantRepository.findByOwnerId(userId);
+        for (Restaurant r : userRestaurants) {
+            eventsToDelete.addAll(eventRepository.findByRestaurantId(r.getId()));
         }
-        
-        // Cancella tutte le partecipazioni
+
+        // ESECUZIONE CANCELLAZIONI
+        for (SocialEvent event : eventsToDelete) {
+            participationRepository.deleteByEventId(event.getId());
+            eventRepository.delete(event);
+        }
+
+        restaurantRepository.deleteAll(userRestaurants);
+
         participationRepository.deleteByUserId(userId);
-        
-        // Cancella utente
         userRepository.deleteById(userId);
     }
 

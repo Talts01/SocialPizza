@@ -20,6 +20,6 @@ public class UserController {
 
     @GetMapping
     public List<AppUser> getAllUsers() {
-        return userRepository.findAll();
+            return userRepository.findAll();
     }
 }

@@ -1,4 +1,3 @@
-// src/services/authService.ts
 
 // Definiamo l'URL base del nostro Backend (nota la porta 8081)
 const API_URL = 'http://localhost:8081/api/auth';

@@ -1,35 +1,31 @@
 import { useContext } from "react";
 import "./Header.css";
-// Importiamo il Context per leggere i dati dell'utente
 import { UserContext } from "../context/UserContext";
 
+// Props del componente Header:
 interface HeaderProps {
-    onLogout: () => void;
-    onNavigateHome?: () => void;
+    onLogout: () => void | Promise<void>; // eseguire il logout
 }
 
-export function Header({ onLogout, onNavigateHome }: HeaderProps) {
-    // 1. Recuperiamo l'utente dal contesto
+export function Header({ onLogout }: HeaderProps) {
+    // Ottiene l'utente corrente
     const user = useContext(UserContext);
 
     return (
         <header>
-            <div className="logo" onClick={onNavigateHome} style={{cursor: 'pointer'}}>
+            <div className="logo">
                 🍕 SocialPizza
             </div>
-            
-            {/* 2. Mostriamo il menu utente SOLO se l'utente esiste */}
+
             {user && (
                 <nav className="user-nav">
-                    {/* Mostriamo il nome utente */}
                     <div className="nav-item">
-                        {user.username}
+                        {user.name} ({user.role})
                     </div>
                     
-                    {/* Tasto Esci */}
                     <div 
                         className="nav-item" 
-                        onClick={onLogout} 
+                        onClick={() => { onLogout(); }} 
                         style={{cursor: 'pointer'}}
                     >
                         Esci

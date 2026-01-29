@@ -1,9 +1,6 @@
 package com.socialpizza.backend.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,13 +17,15 @@ public class AppUser {
 
     private String name;
     private String surname;
+
+    @Column(unique = true, nullable = false)
     private String email;
+
+    @Column(nullable = false)
     private String password;
 
-    // Ruolo: "USER", "RESTAURATEUR", "ADMIN"
     private String role;
 
-    private Boolean isVerified = false;
-
+    @Column(columnDefinition = "TEXT")
     private String bio;
 }

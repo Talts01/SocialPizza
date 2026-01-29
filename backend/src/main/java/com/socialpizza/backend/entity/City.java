@@ -14,6 +14,6 @@ public class City {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name; // Es. "Milano"
-    private String CAP; // Es. "20100"
+    private String name;
+    private String CAP;
 }

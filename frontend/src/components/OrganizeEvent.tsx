@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
-import toast from 'react-hot-toast';
+import { useContext, useEffect, useState } from "react";
 import type { PageType } from "../App";
+import { UserContext } from "../context/UserContext";
+import type { Restaurant } from "../types";
 import "./OrganizeEvent.css";
 
 interface OrganizeEventProps {
+    // cambiare pagina dopo la creazione dell'evento
     onNavigate: (page: PageType) => void;
 }
 
@@ -13,26 +15,30 @@ interface SelectOption {
 }
 
 export function OrganizeEvent({ onNavigate }: OrganizeEventProps) {
-    // Stati per i campi del form
+    // Utente corrente dal contesto
+    const user = useContext(UserContext);
+
+    // Campi del form
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    
-    // --- MODIFICA 1: Due stati separati per Data e Ora ---
     const [eventDay, setEventDay] = useState("");
     const [eventTime, setEventTime] = useState("");
-    
+
+    // Numero massimo partecipanti
     const [maxParticipants, setMaxParticipants] = useState(10);
-    
-    // Stati per i menu a tendina
-    const [restaurants, setRestaurants] = useState<SelectOption[]>([]);
+
+    // Dati caricati dal backend per popolamento select
+    const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
     const [categories, setCategories] = useState<SelectOption[]>([]);
-    
+
+    // Valori selezionati per ristorante e categoria 
     const [selectedRestaurant, setSelectedRestaurant] = useState<number>(0);
     const [selectedCategory, setSelectedCategory] = useState<number>(0);
 
-    // Helper: Ottieni la data di oggi in formato YYYY-MM-DD per il blocco "min"
+    // Stringa data
     const todayStr = new Date().toISOString().split("T")[0];
 
+    // Carica ristoranti 
     useEffect(() => {
         const fetchResources = async () => {
             try {
@@ -42,7 +48,18 @@ export function OrganizeEvent({ onNavigate }: OrganizeEventProps) {
                 ]);
 
                 if (restRes.ok && catRes.ok) {
-                    setRestaurants(await restRes.json());
+                    const restData: Restaurant[] = await restRes.json();
+                    setRestaurants(restData);
+
+                    // Se l'utente è ristoratore, selezioniamo automaticamente il suo ristorante
+                    if (user?.role === "RISTORATORE") {
+                        const myRestaurant = restData.find(r => r.owner?.email === user.username);
+                        if (myRestaurant) {
+                            setSelectedRestaurant(myRestaurant.id);
+                        }
+                    }
+
+                    // Categorie e "Altro" alla fine
                     const catData = await catRes.json();
                     const sortedCats = [...catData].sort((a: SelectOption, b: SelectOption) => {
                         const isAAltro = a.name?.toLowerCase() === "altro";
@@ -52,48 +69,40 @@ export function OrganizeEvent({ onNavigate }: OrganizeEventProps) {
                         return a.name.localeCompare(b.name);
                     });
                     setCategories(sortedCats);
-                } else {
-                    throw new Error("Risorse non trovate");
                 }
-            } catch (err) {
-                console.warn("Backend resources not found, using mocks");
-                setRestaurants([
-                    { id: 1, name: "Pizzeria Da Luigi" },
-                    { id: 2, name: "Bella Napoli" }
-                ]);
-                setCategories([
-                    { id: 1, name: "Anime & Manga" },
-                    { id: 2, name: "Sport & Calcio" },
-                    { id: 3, name: "Musica Live" }
-                ]);
+                // Se il backend fallisce, restaurants e categories rimangono array vuoti
+            }  catch (err) {
+                // In sviluppo si possono usare dati mock se il backend non risponde
+                console.warn("Risorse non disponibili");
             }
         };
         fetchResources();
-    }, []);
+    }, [user]);
 
+    // valida i campi e invia la richiesta al backend per creare evento
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validazione: controlliamo che entrambi i campi data/ora siano pieni
+        // Validazione minima lato client
         if (!title || !eventDay || !eventTime || selectedRestaurant === 0 || selectedCategory === 0) {
-            toast.error("Compila tutti i campi obbligatori!");
+            alert("Compila tutti i campi obbligatori!"); 
             return;
         }
 
-        // --- MODIFICA 2: Uniamo data e ora nel formato ISO per il Backend ---
+        // Combina data e ora in formato ISO-local usato dal backend
         const finalDateTime = `${eventDay}T${eventTime}`; 
-        // Esempio risultato: "2025-05-10T20:15"
 
         try {
             const newEventPayload = {
                 title,
                 description,
-                eventDate: finalDateTime, // Usiamo la stringa combinata
+                eventDate: finalDateTime,
                 maxParticipants: maxParticipants,
                 status: "PENDING",
                 category: { id: selectedCategory }
             };
 
+            // POST di creazione evento, passando l'id del ristorante selezionato
             const response = await fetch(`http://localhost:8081/api/events/create?restaurantId=${selectedRestaurant}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -103,20 +112,21 @@ export function OrganizeEvent({ onNavigate }: OrganizeEventProps) {
 
             if (response.ok) {
                 const createdEvent = await response.json();
+                // Se l'evento è approvato subito, navighiamo alla lista eventi, altrimenti al dashboard
                 if (createdEvent.status === "APPROVED") {
-                    toast.success("Pizzata pubblicata! 🍕");
+                    alert("Pizzata pubblicata! 🍕"); 
                     onNavigate("eventi");
                 } else {
-                    toast.success("Richiesta inviata! In attesa di approvazione ⏳");
+                    alert("Richiesta inviata! In attesa di approvazione ⏳"); 
                     onNavigate("dashboard");
                 }
             } else {
                 const errMsg = await response.text();
-                toast.error("Errore: " + errMsg);
+                alert("Errore: " + errMsg); 
             }
         } catch (error) {
             console.error(error);
-            toast.error("Errore di connessione");
+            alert("Errore di connessione"); 
         }
     };
 
@@ -127,6 +137,7 @@ export function OrganizeEvent({ onNavigate }: OrganizeEventProps) {
                 <p>Compila i dettagli qui sotto. La tua proposta sarà visibile a tutti dopo l'approvazione.</p>
             </div>
 
+            {/* Form nuova proposta evento */}
             <form className="organize-form" onSubmit={handleSubmit}>
                 
                 <div className="form-group">
@@ -140,10 +151,10 @@ export function OrganizeEvent({ onNavigate }: OrganizeEventProps) {
                     />
                 </div>
 
-                {/* --- MODIFICA 3: Campi Data e Ora Separati --- */}
                 <div className="form-row">
                     <div className="form-group half">
                         <label>Data *</label>
+                        {/* Data evento */}
                         <input 
                             type="date" 
                             min={todayStr} 
@@ -156,7 +167,6 @@ export function OrganizeEvent({ onNavigate }: OrganizeEventProps) {
                         <label>Ora *</label>
                         <input 
                             type="time" 
-                            
                             value={eventTime}
                             onChange={e => setEventTime(e.target.value)}
                             required
@@ -167,6 +177,7 @@ export function OrganizeEvent({ onNavigate }: OrganizeEventProps) {
                 <div className="form-row">
                     <div className="form-group half">
                         <label>Posti Max *</label>
+                        {/* Numero massimo partecipanti */}
                         <input 
                             type="number" 
                             min="2" 
@@ -178,10 +189,13 @@ export function OrganizeEvent({ onNavigate }: OrganizeEventProps) {
                     </div>
                     <div className="form-group half">
                         <label>Scegli Ristorante *</label>
+                        {/* Select ristorante*/}
                         <select 
                             value={selectedRestaurant} 
                             onChange={e => setSelectedRestaurant(parseInt(e.target.value))}
                             required
+                            disabled={user?.role === "RISTORATORE" && selectedRestaurant !== 0}
+                            style={user?.role === "RISTORATORE" && selectedRestaurant !== 0 ? { backgroundColor: "#e8f5e9", color: "#2e7d32", fontWeight: "bold" } : {}}
                         >
                             <option value={0}>-- Seleziona Pizzeria --</option>
                             {restaurants.map(r => (
@@ -193,6 +207,7 @@ export function OrganizeEvent({ onNavigate }: OrganizeEventProps) {
 
                 <div className="form-group">
                     <label>Categoria *</label>
+                    {/* Select categoria/tema dell'evento */}
                     <select 
                         value={selectedCategory} 
                         onChange={e => setSelectedCategory(parseInt(e.target.value))}

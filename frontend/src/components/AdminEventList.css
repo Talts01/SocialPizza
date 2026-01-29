@@ -160,3 +160,25 @@
     border-radius: 12px;
     border: 2px dashed #E0D5C5;
 }
+
+.feedback-msg {
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 1px solid transparent; /* Bordo di base */
+    font-weight: 500;
+}
+
+/* Stile per ERRORE (Rosso) */
+.feedback-error {
+    background-color: #FFEBEE;
+    color: #D32F2F;
+    border-color: #FFCDD2;
+}
+
+/* Stile per SUCCESSO (Verde) */
+.feedback-success {
+    background-color: #E8F5E9;
+    color: #2E7D32;
+    border-color: #C8E6C9;
+}

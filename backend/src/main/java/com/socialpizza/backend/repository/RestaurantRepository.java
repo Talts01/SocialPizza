@@ -8,7 +8,5 @@ import java.util.List;
 
 @Repository
 public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
-
-    // Trova i ristoranti di un proprietario specifico (per la dashboard del Ristoratore)
     List<Restaurant> findByOwnerId(Long ownerId);
 }

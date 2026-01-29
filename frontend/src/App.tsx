@@ -1,69 +1,83 @@
 import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
-import { Toaster } from 'react-hot-toast';
 import './App.css';
 import { AdminDashboard } from './components/AdminDashboard';
+import { AdminEventList } from './components/AdminEventList';
 import { ContentNav } from './components/ContentNav';
 import { EventBoard } from './components/EventBoard';
 import { Header } from './components/Header';
 import Login from './components/Login';
 import { MyRequests } from './components/MyRequests';
-import { OrganizeEvent } from './components/OrganizeEvent'; // IMPORTA IL NUOVO FILE
+import { OrganizeEvent } from './components/OrganizeEvent';
 import { RestaurantDashboard } from './components/RestaurantDashboard';
 import { UserContext, type User } from './context/UserContext';
 
-// 1. AGGIUNTO "organizza" AI TIPI DI PAGINA
+// Tipo per le pagine disponibili nell'applicazione
 export type PageType = "eventi" | "richieste" | "dashboard" | "organizza" | "admin";
 
 function App() {
-    const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
-    
-    const [currentPage, setCurrentPage] = useState<PageType>("eventi");
-    
+    // Gestione stato dell'applicazione: utente loggato, caricamento e pagina corrente
+    const [user, setUser] = useState<User | null>(null);  // Dati utente loggato
+    const [loading, setLoading] = useState(true);  // Flag per lo schermo di caricamento iniziale
+    const [currentPage, setCurrentPage] = useState<PageType>("eventi");  // Pagina attualmente visualizzata
+
+    // Verifica la sessione dell'utente al caricamento iniziale
     useEffect(() => {
         const checkSession = async () => {
             try {
                 const response = await fetch("http://localhost:8081/api/auth/me", {
                     credentials: "include"
                 });
+
                 if (response.ok) {
                     const sessionData = await response.json();
-                    setUser({ username: sessionData.username, role: sessionData.role });
+                    setUser({ 
+                        username: sessionData.username, 
+                        name: sessionData.name, 
+                        role: sessionData.role 
+                    });
+                } else {
+                    setUser(null);
                 }
             } catch (error) {
-                console.error("Errore verifica sessione", error);
+                console.error("Errore check session:", error);
+                setUser(null);
             } finally {
                 setLoading(false);
             }
         };
+
         checkSession();
     }, []);
 
+    // Gestisce il logout dell'utente
     const handleLogout = async () => {
         try {
-            await fetch("http://localhost:8081/api/auth/logout", { method: "POST", credentials: "include" });
+            await fetch("http://localhost:8081/api/auth/logout", {
+                method: "POST",
+                credentials: "include"
+            });
+            setUser(null);
+            setCurrentPage("eventi");
+            alert("Logout effettuato"); 
         } catch (error) {
             console.error("Errore logout", error);
+            alert("Errore durante il logout"); 
         }
-        setUser(null);
-        setCurrentPage("eventi");
     };
 
     const handleNavigate = (page: PageType) => {
         setCurrentPage(page);
     };
 
-    if (loading) {
-        return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-            <p>Caricamento...</p>
-        </div>;
-    }
+    // Schermata di caricamento iniziale
+    if (loading) return <p style={{textAlign: 'center', marginTop: '50px'}}>Caricamento in corso...</p>;
 
+    // Determina il contenuto principale in base alla pagina selezionata e al ruolo dell'utente
     let mainContent: ReactNode = null;
     switch (currentPage) {
         case "eventi":
-            mainContent = <EventBoard />;
+            mainContent = user?.role === "ADMIN" ? <AdminEventList /> : <EventBoard />;
             break;
             
         case "richieste":
@@ -71,9 +85,13 @@ function App() {
             break;
             
         case "dashboard":
-            mainContent = user?.role === "RESTAURATEUR" 
-                ? <RestaurantDashboard /> 
-                : <MyRequests defaultTab="created" />;
+            if (user?.role === "RISTORATORE") {
+                mainContent = <RestaurantDashboard />;
+            } else if (user?.role === "ADMIN") {
+                mainContent = <AdminEventList />;
+            } else {
+                mainContent = <MyRequests defaultTab="created" />;
+            }
             break;
 
         case "admin":
@@ -82,9 +100,7 @@ function App() {
                 : <EventBoard />;
             break;
 
-        // 2. NUOVO CASO PER LA PAGINA ORGANIZZA
         case "organizza":
-            // Passiamo handleNavigate così dopo aver creato l'evento può reindirizzarci
             mainContent = <OrganizeEvent onNavigate={handleNavigate} />;
             break;
             
@@ -93,11 +109,14 @@ function App() {
     }
 
     return (
+        // Provider che fornisce i dati dell'utente a tutti i componenti figli
         <UserContext.Provider value={user}>
-            <Toaster position="top-right" />
-            <Header onLogout={handleLogout} />
-
+            <Header 
+                onLogout={() => { handleLogout(); }} 
+                onNavigateHome={() => handleNavigate("eventi")} 
+            />
             {user ? (
+                // Utente loggato: mostra navigazione e contenuto principale
                 <section className="main">
                     <div className="left-col">
                         <ContentNav 
@@ -110,13 +129,14 @@ function App() {
                     </div>
                 </section>
             ) : (
+                // Utente non loggato: mostra il form di login
                 <section className="login">
                     <Login onLogin={(userData) => setUser(userData)} />
                 </section>
             )}
 
             <footer style={{ backgroundColor: "#eee", padding: "10px", gridRow: "3 / 4", textAlign: "center", fontSize: "0.8rem" }}>
-                &copy; 2025 SocialPizza - Progetto Universitario
+                &copy; 2025 SocialPizza - Progetto TWEB - Barucco Walter, Luigi Niso
             </footer>
         </UserContext.Provider>
     );

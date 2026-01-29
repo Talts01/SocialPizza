@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import toast from 'react-hot-toast';
 import type { SocialEvent } from "../types";
 import "./MyRequests.css";
 
@@ -8,11 +7,14 @@ interface MyRequestsProps {
 }
 
 export function MyRequests({ defaultTab = "created" }: MyRequestsProps) {
+    // Eventi creati dall'utente e eventi a cui l'utente ha aderito
     const [createdEvents, setCreatedEvents] = useState<SocialEvent[]>([]);
     const [joinedEvents, setJoinedEvents] = useState<SocialEvent[]>([]);
     const [activeTab, setActiveTab] = useState<"created" | "joined">(defaultTab);
+    // Stato di caricamento iniziale
     const [loading, setLoading] = useState(true);
 
+    // Carica in parallelo gli eventi creati e quelli joinati dall'API
     const fetchMyEvents = async () => {
         try {
             const [createdRes, joinedRes] = await Promise.all([
@@ -33,46 +35,38 @@ export function MyRequests({ defaultTab = "created" }: MyRequestsProps) {
         }
     };
 
+    // Aggiorna la tab attiva se cambia la prop di default
     useEffect(() => {
         setActiveTab(defaultTab);
     }, [defaultTab]);
 
+    // Carica gli eventi al montaggio del componente
     useEffect(() => {
         fetchMyEvents();
     }, []);
 
-    const confirmWithToast = (message: string) => new Promise<boolean>((resolve) => {
-        const id = toast.custom((t) => (
-            <div style={{ background: "#fff", padding: "12px 14px", borderRadius: "10px", boxShadow: "0 6px 18px rgba(0,0,0,0.12)", display: "flex", gap: "10px", alignItems: "center", minWidth: "320px" }}>
-                <span>{message}</span>
-                <div style={{ display: "flex", gap: "8px", marginLeft: "auto" }}>
-                    <button style={{ padding: "6px 10px", borderRadius: "8px", border: "1px solid #ddd", background: "#f5f5f5", cursor: "pointer" }} onClick={() => { toast.dismiss(id); resolve(false); }}>No</button>
-                    <button style={{ padding: "6px 10px", borderRadius: "8px", border: "none", background: "#f1006b", color: "white", cursor: "pointer" }} onClick={() => { toast.dismiss(id); resolve(true); }}>Sì</button>
-                </div>
-            </div>
-        ), { duration: 4000, position: "top-center" });
-    });
-
+    // Rimuove una proposta creata dall'utente
     const handleWithdraw = async (eventId: number) => {
-        if (!confirm("Vuoi davvero ritirare questa proposta?")) return;
+        if (!window.confirm("Vuoi davvero ritirare questa proposta?")) return;
         try {
             const response = await fetch(`http://localhost:8081/api/events/${eventId}/withdraw`, {
                 method: "DELETE",
                 credentials: "include"
             });
             if (response.ok) {
-                toast.success("Proposta ritirata!");
-                fetchMyEvents();
+                alert("Proposta ritirata!"); 
+                fetchMyEvents(); // ricarica lista
             } else {
-                toast.error("Errore ritiro proposta");
+                alert("Errore ritiro proposta"); 
             }
         } catch (error) {
             console.error(error);
         }
     };
 
+    // L'utente annulla la propria partecipazione a un evento
     const handleLeave = async (eventId: number) => {
-        const confirmed = await confirmWithToast("Vuoi davvero annullare la tua partecipazione?");
+        const confirmed = window.confirm("Vuoi davvero annullare la tua partecipazione?");
         if (!confirmed) return;
         try {
             const response = await fetch(`http://localhost:8081/api/events/${eventId}/leave`, {
@@ -80,24 +74,28 @@ export function MyRequests({ defaultTab = "created" }: MyRequestsProps) {
                 credentials: "include"
             });
             if (response.ok) {
-                toast.success("Iscrizione cancellata!");
+                alert("Iscrizione cancellata!"); 
                 fetchMyEvents();
             } else {
-                toast.error("Errore cancellazione");
+                alert("Errore cancellazione"); 
             }
         } catch (error) {
             console.error(error);
         }
     };
 
+    // Mostra messaggio di caricamento
     if (loading) return <p className="loading-msg">Caricamento...</p>;
 
+    // Sceglie la lista da mostrare in base alla tab attiva
     const eventsToShow = activeTab === "created" ? createdEvents : joinedEvents;
 
     return (
         <div className="dashboard-container">
+            {/* Titolo dinamico in base alla tab */}
             <h2>{activeTab === "created" ? "📋 Stato delle mie Proposte" : "🎟 Eventi a cui Partecipo"}</h2>
 
+            {/* Messaggio se non ci sono eventi */}
             {eventsToShow.length === 0 ? (
                 <p className="empty-msg">Nessun evento in questa categoria.</p>
             ) : (
@@ -112,13 +110,14 @@ export function MyRequests({ defaultTab = "created" }: MyRequestsProps) {
                                         📅 {new Date(evt.eventDate).toLocaleDateString('it-IT')} | 📍 {evt.restaurant.name}
                                     </p>
                                 </div>
+                                {/* Badge di stato: PENDING / APPROVED / REJECTED */}
                                 <span className={`status-badge status-${evt.status}`}>
                                     {evt.status === "PENDING" ? "In Attesa ⏳" : 
                                      evt.status === "APPROVED" ? "Accettata ✅" : "Rifiutata ❌"}
                                 </span>
                             </div>
 
-                            {/* --- BOX RIFIUTO (ROSSO) --- */}
+                            {/* Se la proposta è stata rifiutata, mostriamo la motivazione */}
                             {activeTab === "created" && evt.status === "REJECTED" && (
                                 <div className="rejection-box">
                                     <span className="rejection-title">Motivazione del Ristoratore:</span>
@@ -128,7 +127,7 @@ export function MyRequests({ defaultTab = "created" }: MyRequestsProps) {
                                 </div>
                             )}
 
-                            
+                            {/* Messaggio del ristoratore mostrato per proposte approvate */}
                             {activeTab === "created" && evt.status === "APPROVED" && evt.moderatorComment && (
                                 <div className="approval-box">
                                     <span className="approval-title">Messaggio dal Ristoratore:</span>
@@ -139,6 +138,7 @@ export function MyRequests({ defaultTab = "created" }: MyRequestsProps) {
                             )}
 
                             <div className="card-actions">
+                                {/* Pulsante per ritirare la proposta */}
                                 {activeTab === "created" && evt.status === "PENDING" && (
                                     <button 
                                         className="action-btn withdraw"
@@ -147,6 +147,7 @@ export function MyRequests({ defaultTab = "created" }: MyRequestsProps) {
                                         Ritira Proposta
                                     </button>
                                 )}
+                                {/* Pulsante per lasciare un evento a cui si oartecipa*/}
                                 {activeTab === "joined" && evt.status === "APPROVED" && (
                                     <button 
                                         className="action-btn leave"

@@ -14,17 +14,17 @@ public class Restaurant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name; // Es. "Pizzeria da Luigi"
+    private String name;
     private String address;
-    private int maxCapacity; // Capienza generale del locale
+    private int maxCapacity;
 
-    // RELAZIONE: Molti ristoranti possono stare in una Città (ManyToOne)
+
     @ManyToOne
-    @JoinColumn(name = "city_id") // Crea la colonna 'city_id' nel DB
+    @JoinColumn(name = "city_id")
     private City city;
 
-    // RELAZIONE: Un ristorante appartiene a un Ristoratore (Utente)
-    @OneToOne // Un ristorante ha un solo proprietario (semplifichiamo così)
+
+    @OneToOne
     @JoinColumn(name = "owner_id")
     private AppUser owner;
 }

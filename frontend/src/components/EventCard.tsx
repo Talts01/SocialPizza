@@ -1,15 +1,15 @@
 import type { SocialEvent } from "../types";
 import "./EventCard.css";
 
+// Props del componente:
 interface EventCardProps {
     event: SocialEvent;
-    onJoin: (id: number) => void;
-    // Rimosso onDelete
+    onJoin: (id: number) => void;// callback chiamato quando l'utente clicca "Partecipa"
     isJoined: boolean;
 }
 
 export function EventCard({ event, onJoin, isJoined }: EventCardProps) {
-    
+    // Aggiunge una classe CSS extra quando l'utente è già iscritto
     const cardClass = isJoined ? "event-card joined-card" : "event-card";
 
     return (
@@ -22,19 +22,19 @@ export function EventCard({ event, onJoin, isJoined }: EventCardProps) {
                 📅 {new Date(event.eventDate).toLocaleDateString('it-IT')} <br/>
                 📍 {event.restaurant.name} ({event.restaurant.city?.name})
             </p>
-
+            
             <div className="card-body">
+                
                 <span className="theme-badge">
                     🎨 {event.category.name}
                 </span>
-                
                 {event.description && (
                     <p className="card-description">
                         "{event.description}"
                     </p>
                 )}
             </div>
-
+                
             <div className="card-action-center">
                 {isJoined ? (
                     <div className="joined-label">
@@ -50,7 +50,8 @@ export function EventCard({ event, onJoin, isJoined }: EventCardProps) {
                         </button>
                     )
                 )}
-                
+
+                {/* Mostra lo stato "In attesa" per gli eventi PENDING */}
                 {event.status === "PENDING" && (
                     <span className="pending-label">⏳ In attesa di approvazione</span>
                 )}
