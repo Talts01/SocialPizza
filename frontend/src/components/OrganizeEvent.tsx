@@ -8,7 +8,7 @@ interface OrganizeEventProps {
     // cambiare pagina dopo la creazione dell'evento
     onNavigate: (page: PageType) => void;
 }
-
+// Tipo per opzioni select ristorante e categoria
 interface SelectOption {
     id: number;
     name: string;
@@ -195,7 +195,7 @@ export function OrganizeEvent({ onNavigate }: OrganizeEventProps) {
                             onChange={e => setSelectedRestaurant(parseInt(e.target.value))}
                             required
                             disabled={user?.role === "RISTORATORE" && selectedRestaurant !== 0}
-                            style={user?.role === "RISTORATORE" && selectedRestaurant !== 0 ? { backgroundColor: "#e8f5e9", color: "#2e7d32", fontWeight: "bold" } : {}}
+                            className={`filter-select ${user?.role === "RISTORATORE" && selectedRestaurant !== 0 ? 'select-locked-ristoratore' : ''}`}
                         >
                             <option value={0}>-- Seleziona Pizzeria --</option>
                             {restaurants.map(r => (

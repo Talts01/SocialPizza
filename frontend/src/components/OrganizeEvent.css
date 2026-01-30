@@ -108,3 +108,10 @@
     transform: translateY(0);
 }
 
+.select-locked-ristoratore {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    font-weight: bold;
+    border: 1px solid #2e7d32;
+    cursor: not-allowed; /* Fa capire all'utente che non può cliccare */
+}

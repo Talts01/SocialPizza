@@ -13,6 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "${cors.allowed.origins}", allowCredentials = "true")
+// Ritorna la lista completa di tutti gli utenti registrati
 public class UserController {
 
     @Autowired

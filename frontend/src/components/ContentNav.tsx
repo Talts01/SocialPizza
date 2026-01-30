@@ -19,51 +19,50 @@ export function ContentNav({ activePage, onNavigate }: ContentNavProps) {
 
     // Controlla se l'utente attuale è un amministratore
     const isAdmin = user?.role === "ADMIN";
+const isRestaurant = user?.role === "RISTORATORE";
 
     return (
         <nav className="content-nav">
-            {/* Menu standard: visibile solo agli utenti non-admin */}
+            {/* Sezione Pubblica / Utente */}
             {!isAdmin && (
                 <>
-                    <div 
-                        className={getClass("organizza")} 
-                        onClick={() => onNavigate("organizza")}
-                        style={{fontWeight: 'bold'}}
-                    >
-                        🍕 Organizza Pizzata
+                    <div className={getClass("organizza")} onClick={() => onNavigate("organizza")}>
+                            🍕 Organizza Pizzata
                     </div>
-
-                    <div 
-                        className={getClass("eventi")} 
-                        onClick={() => onNavigate("eventi")}
-                    >
-                        📅 Bacheca Eventi
+                    <div className={getClass("eventi")} onClick={() => onNavigate("eventi")}>
+                            📅  Bacheca Eventi
                     </div>
-
-                    <div 
-                        className={getClass("richieste")} 
-                        onClick={() => onNavigate("richieste")}
-                    >
-                        🎟 I Miei Eventi
+                    <div className={getClass("richieste")} onClick={() => onNavigate("richieste")}>
+                            🎟  I Miei Eventi
                     </div>
                 </>
             )}
-        
-            <div 
-                className={getClass("dashboard")} 
-                onClick={() => onNavigate("dashboard")}
-            >
-                📋 Stato Eventi
-            </div>
-            
-            {/* Menu admin: visibile solo agli amministratori */}
-            {isAdmin && (
-                <div
-                    className={getClass("admin")}
-                    onClick={() => onNavigate("admin")}
-                >
-                    🛠 Area Admin
+
+            {!isRestaurant && !isAdmin && (
+                <>
+                    <div className={getClass("creati")} onClick={() => onNavigate("creati")}>
+                            📋 Stato Eventi
+                    </div>
+                </>
+            )}
+
+            {/* Sezione Ristoratore */}
+            {isRestaurant && (
+                <div className={getClass("dashboard")} onClick={() => onNavigate("dashboard")}>
+                     🛠 Dashboard 
                 </div>
+            )}
+
+            {/* Sezione Admin */}
+            {isAdmin && (
+                <>
+                <div className={getClass("admin")} onClick={() => onNavigate("admin")}>
+                    🛠 Pannello Admin
+                </div>
+                <div className={getClass("dashboard")} onClick={() => onNavigate("dashboard")}>
+                     🛡️ Dashboard 
+                </div>
+                </>
             )}
         </nav>
     );

@@ -10,7 +10,7 @@ import com.socialpizza.backend.repository.SocialEventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import jakarta.annotation.PostConstruct;
+
 
 import java.util.HashSet;
 import java.util.List;
@@ -64,7 +64,7 @@ public class AppUserService {
     }
 
     /**
-     * Gestisce il login verificando email e password..
+     * Gestisce il login verificando email e password.
      */
     public AppUser login(String email, String password) {
         AppUser user = userRepository.findByEmail(email)
@@ -134,7 +134,4 @@ public class AppUserService {
         userRepository.deleteById(userId);
     }
 
-    @PostConstruct
-    public void init() {
-    }
 }

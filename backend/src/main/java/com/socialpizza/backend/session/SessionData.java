@@ -1,6 +1,7 @@
 package com.socialpizza.backend.session;
-
+// Classe DTO (Data Transfer Object) per trasferire i dati della sessione al Frontend.
 public class SessionData {
+    // I campi sono 'final' per rendere l'oggetto immutabile
     private final String username;
     private final String name;
     private final String role;

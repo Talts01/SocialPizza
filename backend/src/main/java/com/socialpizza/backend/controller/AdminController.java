@@ -56,7 +56,7 @@ public class AdminController {
         if (!isAdmin(session)) return ResponseEntity.status(403).body("Accesso negato");
 
         try {
-            // Delega al service la logica di validazione e hashing della password
+            // Delega al service la logica
             AppUser created = userService.registerUser(user);
             return ResponseEntity.ok(created);
         } catch (RuntimeException e) {

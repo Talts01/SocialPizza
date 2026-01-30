@@ -54,7 +54,7 @@ export default function Login({ onLogin }: LoginProps) {
                     <input 
                         type="text" 
                         className="login-input"
-                        placeholder="Email (es. mario@gmail.com)" 
+                        placeholder="Email (es. mario@gmail.it)" 
                         value={email} 
                         onChange={(e) => setEmail(e.target.value)}
                         onKeyPress={(e) => e.key === "Enter" && handleSubmit()}

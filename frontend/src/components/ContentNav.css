@@ -29,3 +29,7 @@ nav.content-nav div.level-1.active {
     color: #FFFFFF;
     border: 2px solid #D07F2B;
 }
+
+.text-bold {
+    font-weight: bold;
+}

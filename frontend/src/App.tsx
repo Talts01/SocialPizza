@@ -6,14 +6,15 @@ import { AdminEventList } from './components/AdminEventList';
 import { ContentNav } from './components/ContentNav';
 import { EventBoard } from './components/EventBoard';
 import { Header } from './components/Header';
-import Login from './components/Login';
-import { MyRequests } from './components/MyRequests';
+import Login from  './components/Login';
+import { MyJoinedEvents } from './components/MyJoinedEvents'; 
+import { MyCreatedEvents } from './components/MyCreatedEvents'; 
 import { OrganizeEvent } from './components/OrganizeEvent';
 import { RestaurantDashboard } from './components/RestaurantDashboard';
 import { UserContext, type User } from './context/UserContext';
 
 // Tipo per le pagine disponibili nell'applicazione
-export type PageType = "eventi" | "richieste" | "dashboard" | "organizza" | "admin";
+export type PageType = "eventi" | "richieste" | "creati" | "dashboard" | "organizza" | "admin";
 
 function App() {
     // Gestione stato dell'applicazione: utente loggato, caricamento e pagina corrente
@@ -65,7 +66,7 @@ function App() {
             alert("Errore durante il logout"); 
         }
     };
-
+    // Gestisce la navigazione tra le pagine
     const handleNavigate = (page: PageType) => {
         setCurrentPage(page);
     };
@@ -81,8 +82,12 @@ function App() {
             break;
             
         case "richieste":
-            mainContent = <MyRequests defaultTab="joined" />;
+            mainContent = <MyJoinedEvents />;
             break;
+        case "creati":
+            mainContent = <MyCreatedEvents />;
+            break;
+        
             
         case "dashboard":
             if (user?.role === "RISTORATORE") {
@@ -90,7 +95,7 @@ function App() {
             } else if (user?.role === "ADMIN") {
                 mainContent = <AdminEventList />;
             } else {
-                mainContent = <MyRequests defaultTab="created" />;
+                mainContent = <MyCreatedEvents />;
             }
             break;
 
@@ -113,7 +118,6 @@ function App() {
         <UserContext.Provider value={user}>
             <Header 
                 onLogout={() => { handleLogout(); }} 
-                onNavigateHome={() => handleNavigate("eventi")} 
             />
             {user ? (
                 // Utente loggato: mostra navigazione e contenuto principale
@@ -134,9 +138,8 @@ function App() {
                     <Login onLogin={(userData) => setUser(userData)} />
                 </section>
             )}
-
-            <footer style={{ backgroundColor: "#eee", padding: "10px", gridRow: "3 / 4", textAlign: "center", fontSize: "0.8rem" }}>
-                &copy; 2025 SocialPizza - Progetto TWEB - Barucco Walter, Luigi Niso
+            <footer className="main-footer">
+                    &copy; 2025 SocialPizza - Progetto TWEB - Barucco Walter, Luigi Niso
             </footer>
         </UserContext.Provider>
     );
