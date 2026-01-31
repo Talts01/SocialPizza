@@ -1,0 +1,18 @@
+2026-01-31 18:50:25.397512+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "APP_USER" not found (this database is empty); SQL statement:
+select au1_0.id,au1_0.bio,au1_0.email,au1_0.name,au1_0.password,au1_0.role,au1_0.surname from app_user au1_0 where au1_0.email=? [42104-232]
+2026-01-31 18:50:25.434440+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "APP_USER" not found (this database is empty); SQL statement:
+select au1_0.id,au1_0.bio,au1_0.email,au1_0.name,au1_0.password,au1_0.role,au1_0.surname from app_user au1_0 where au1_0.email=? [42104-232]
+2026-01-31 18:50:25.900026+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "APP_USER" not found (this database is empty); SQL statement:
+select au1_0.id,au1_0.bio,au1_0.email,au1_0.name,au1_0.password,au1_0.role,au1_0.surname from app_user au1_0 where au1_0.email=? [42104-232]
+2026-01-31 18:50:25.911072+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "APP_USER" not found (this database is empty); SQL statement:
+select au1_0.id,au1_0.bio,au1_0.email,au1_0.name,au1_0.password,au1_0.role,au1_0.surname from app_user au1_0 where au1_0.email=? [42104-232]
+2026-01-31 18:50:31.997975+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "APP_USER" not found (this database is empty); SQL statement:
+select au1_0.id,au1_0.bio,au1_0.email,au1_0.name,au1_0.password,au1_0.role,au1_0.surname from app_user au1_0 where au1_0.email=? [42104-232]
+2026-01-31 18:51:29.113992+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PARTICIPATION" not found (this database is empty); SQL statement:
+DELETE FROM participation [42104-232]
