@@ -22,7 +22,7 @@ VALUES (4, 'Walter', 'Barucco', 'admin2@socialpizza.it', 'admin123', 'ADMIN', 'A
 
 -- 3. Utente STANDARD (MODIFICA QUI: role = 'UTENTE')
 INSERT INTO app_user (id, name, surname, email, password, role, bio)
-VALUES (5, 'Mario', 'Rossi', 'mario@gmail.it', 'password123', 'UTENTE', 'Grande appassionato di pizza margherita!');
+VALUES (5, 'Mario', 'Rossi', 'mario@gmail.com', 'password123', 'UTENTE', 'Grande appassionato di pizza margherita!');
 
 
 -- Città

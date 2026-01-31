@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import type { SocialEvent } from "../types";
 import "./EventCard.css";
 
@@ -12,10 +13,25 @@ export function EventCard({ event, onJoin, isJoined }: EventCardProps) {
     // Aggiunge una classe CSS extra quando l'utente è già iscritto
     const cardClass = isJoined ? "event-card joined-card" : "event-card";
 
+    const [partecipanti, setPartecipanti] = useState(0);
+
+    // otteniamo il numero di partecipanti attuali
+    useEffect(() => {
+        fetch(`http://localhost:8081/api/events/${event.id}/participants`, { credentials: "include" })
+            .then(res => res.json())
+            .then(data => {
+                setPartecipanti(data.length);
+            })
+            .catch(err => {
+                console.error("Errore nel recupero del numero di partecipanti:", err);
+            });
+    }, [event.id, isJoined]);
+
     return (
         <div className={cardClass}>
-            <div className="card-header-row">
+            <div className="card-header-row" style={{alignItems: "center"}}>
                 <h3 className="card-title">{event.title}</h3>
+                <p>{partecipanti}/{event.maxParticipants}</p>
             </div>
 
             <p className="card-info">
